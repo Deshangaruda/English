@@ -470,7 +470,7 @@
     }
     
     function generateFormFields(data = {}) {
-        const fields = ['id', 'password', 'name', 'grade', 'phone', 'gender', 'address', 'parentInf', 'image', 'birth'];
+        const fields = ['id', 'password', 'name', 'grade', 'phone', 'gender', 'address', 'parentInf', 'birth'];
         return fields.map(field => `
             <div class="form-group">
                 <label>${field.replace(/([A-Z])/g, ' $1').toUpperCase()}</label>
