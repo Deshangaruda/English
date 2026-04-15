@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Admin · Control Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            background-attachment: fixed;
+            padding: 1.5rem;
+            perspective: 1200px;
+        }
+
+        .glass-3d {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15);
+            transition: all 0.4s ease;
+        }
+
+        .btn-3d {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+            border: none;
+            backdrop-filter: blur(12px);
+            padding: 0.85rem 2rem;
+            border-radius: 3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-3d-primary { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .btn-3d-success { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .btn-3d-danger { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .btn-3d-warning { background: linear-gradient(135deg, #f6d365, #fda085); }
+
+        .btn-3d:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-3d {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 3rem;
+            padding: 0.9rem 1.5rem;
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+            color: white;
+        }
+
+        .input-3d:focus {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.5);
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+        .panel { display: none; animation: fadeInUp3D 0.6s ease; }
+        .active-panel { display: block; }
+
+        @keyframes fadeInUp3D {
+            from { opacity: 0; transform: translateY(40px) rotateX(-10deg); }
+            to { opacity: 1; transform: translateY(0) rotateX(0); }
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.8rem;
+        }
+
+        .admin-card {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 1.8rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .admin-card i {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .admin-card h3 { color: white; margin-bottom: 0.5rem; }
+        .admin-card p { color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 2rem;
+            border-radius: 2rem;
+            max-width: 900px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .grade-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .grade-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            text-align: center;
+            border-radius: 1rem;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .grade-card:hover {
+            background: rgba(102, 126, 234, 0.5);
+            transform: scale(1.05);
+        }
+
+        .student-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 1rem;
+            margin: 0.8rem 0;
+            border-radius: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-section {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .pending-request {
+            background: rgba(255, 215, 0, 0.15);
+            border-left: 4px solid #f6d365;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .admin-grid { grid-template-columns: 1fr; }
+            .student-item { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Admin Login -->
+    <div id="loginPanel" class="panel active-panel glass-3d" style="padding: 2.5rem; max-width: 500px; margin: 3rem auto;">
+         <a class="btn-3d" href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <div style="text-align: center; margin-bottom: 1.8rem;">
+            <i class="fas fa-user-shield" style="font-size: 4rem; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; background-clip: text; color: transparent;"></i>
+            <h2 style="color: white; margin-top: 1rem;">Admin Access</h2>
+            <p style="color: rgba(255,255,255,0.6);"> Control Panel</p>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <input type="text" id="adminUser" class="input-3d" placeholder="Admin ID">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <input type="password" id="adminPass" class="input-3d" placeholder="Password">
+        </div>
+        <button id="adminLoginBtn" class="btn-3d btn-3d-primary" style="width:100%;">Login to Dashboard</button>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminPanel" class="panel" style="padding: 1.5rem;">
+        <div class="glass-3d" style="padding: 1.2rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <i class="fas fa-crown" style="font-size: 2rem; color: #f1c40f;"></i>
+                <h2 style="color: white;">My English Control panal</h2>
+            </div>
+            <button id="adminLogoutBtn" class="btn-3d"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <!-- Pending Registration Requests -->
+        <div class="filter-section glass-3d" id="pendingRequestsSection">
+            <h3 style="color: white; margin-bottom: 1rem;"><i class="fas fa-clock"></i> Pending Registration Requests</h3>
+            <div id="pendingRequestsList"></div>
+        </div>
+
+        <!-- Data Filter Section -->
+        <div class="filter-section glass-3d">
+            <h3 style="color: white; margin-bottom: 1rem;"><i class="fas fa-filter"></i> Data Filter</h3>
+            <div class="form-row">
+                <input type="text" id="filterId" class="input-3d" placeholder="Student ID">
+                <select id="filterSheet" class="input-3d">
+                    <option value="registration">Registration Sheet</option>
+                    <option value="attend">Attendance Sheet</option>
+                    <option value="exam">Exam Marks Sheet</option>
+                    <option value="payment">Payment Sheet</option>
+                    <option value="skill">Skill Sheet</option>
+                </select>
+                <button id="filterBtn" class="btn-3d btn-3d-primary">Search</button>
+            </div>
+            <div id="filterResult" style="color: white; margin-top: 1rem;"></div>
+        </div>
+
+        <!-- Admin Cards -->
+        <div class="admin-grid">
+            <div class="admin-card" onclick="openRegistration()">
+                <i class="fas fa-user-plus"></i>
+                <h3>Student Registration</h3>
+                <p>Register new students with auto ID</p>
+            </div>
+            <div class="admin-card" onclick="openUpdateData()">
+                <i class="fas fa-edit"></i>
+                <h3>Update Student</h3>
+                <p>Modify or delete student records</p>
+            </div>
+            <div class="admin-card" onclick="openAttendance()">
+                <i class="fas fa-calendar-check"></i>
+                <h3>Mark Attendance</h3>
+                <p>Daily attendance by grade</p>
+            </div>
+            <div class="admin-card" onclick="openExamMarks()">
+                <i class="fas fa-chart-line"></i>
+                <h3>Exam Marks</h3>
+                <p>Enter exam scores</p>
+            </div>
+            <div class="admin-card" onclick="openSkills()">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Skill Update</h3>
+                <p>Update student skills</p>
+            </div>
+            <div class="admin-card" onclick="openPayments()">
+                <i class="fas fa-credit-card"></i>
+                <h3>Fee Payments</h3>
+                <p>Manage monthly fees</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Registration Modal -->
+<div id="regModal" class="modal">
+    <div class="modal-content">
+        <h2 style="color: white; margin-bottom: 1.5rem;">Student Registration</h2>
+        <form id="regForm">
+            <div class="form-row">
+                <div><label style="color: white;">Student ID (Auto)</label><input type="text" id="regId" readonly class="input-3d"></div>
+                <div><label style="color: white;">Password</label><input type="text" id="regPassword" class="input-3d"></div>
+            </div>
+            <div class="form-row">
+                <div><label style="color: white;">Full Name *</label><input type="text" id="regName" class="input-3d" required></div>
+                <div><label style="color: white;">Grade *</label><select id="regGrade" class="input-3d"><script>for(let i=1;i<=13;i++) document.write(`<option>Grade ${i}</option>`);</script></select></div>
+            </div>
+            <div class="form-row">
+                <div><label style="color: white;">Phone</label><input type="tel" id="regPhone" class="input-3d"></div>
+                <div><label style="color: white;">Gender</label><select id="regGender" class="input-3d"><option>Male</option><option>Female</option><option>Other</option></select></div>
+            </div>
+            <div><label style="color: white;">Address</label><input type="text" id="regAddress" class="input-3d"></div>
+            <div class="form-row">
+                <div><label style="color: white;">Parent Info</label><input type="text" id="regParent" class="input-3d"></div>
+                <div><label style="color: white;">WhatsApp</label><input type="tel" id="regWhatsapp" class="input-3d"></div>
+            </div>
+        </form>
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <button class="btn-3d btn-3d-success" onclick="saveRegistration()">Save</button>
+            <button class="btn-3d btn-3d-danger" onclick="closeModal('regModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Update Modal -->
+<div id="updateModal" class="modal">
+    <div class="modal-content">
+        <h2 style="color: white;">Update Student</h2>
+        <input type="text" id="updateSearchId" class="input-3d" placeholder="Enter Student ID" style="margin: 1rem 0;">
+        <button class="btn-3d" onclick="loadStudentForUpdate()">Load</button>
+        <div id="updateFormContainer" style="margin-top: 1rem;"></div>
+        <button class="btn-3d btn-3d-danger" onclick="deleteStudent()" style="margin-top: 1rem;">Delete Student</button>
+        <button class="btn-3d" onclick="closeModal('updateModal')">Close</button>
+    </div>
+</div>
+
+<!-- Attendance Modal -->
+<div id="attendModal" class="modal">
+    <div class="modal-content">
+        <h2 style="color: white;">Mark Attendance</h2>
+        <div id="attendGrades" class="grade-cards"></div>
+        <div id="attendStudentList"></div>
+        <button class="btn-3d" onclick="closeModal('attendModal')">Close</button>
+    </div>
+</div>
+
+<!-- Exam Modal -->
+<div id="examModal" class="modal">
+    <div class="modal-content">
+        <h2 style="color: white;">Exam Marks Entry</h2>
+        <input type="month" id="examDate" class="input-3d" style="margin-bottom: 1rem;">
+        <div id="examGrades" class="grade-cards"></div>
+        <div id="examStudentList"></div>
+        <button class="btn-3d" onclick="closeModal('examModal')">Close</button>
+    </div>
+</div>
+
+<!-- Skill Modal -->
+<div id="skillModal" class="modal">
+    <div class="modal-content">
+        <h2 style="color: white;">Skill Update</h2>
+        <div id="skillGrades" class="grade-cards"></div>
+        <div id="skillStudentList"></div>
+        <button class="btn-3d" onclick="closeModal('skillModal')">Close</button>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <h2 style="color: white;">Fee Payments</h2>
+        <div id="paymentGrades" class="grade-cards"></div>
+        <div id="paymentStudentList"></div>
+        <button class="btn-3d" onclick="closeModal('paymentModal')">Close</button>
+    </div>
+</div>
+
+<script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysLK54ehivvBoo-QFq1tWhxZ3nLx04UdQEorMy43_7e0Z9fwJIF1N7yYSBqTbvCqsJ/exec";
+    
+    let studentData = {};
+    let attendData = {};
+    let examData = {};
+    let paymentData = {};
+    let skillData = {};
+    let pendingRequests = {};
+    
+    const adminCreds = { "ADMIN001": "admin123", "ADMIN002": "admin456" };
+    
+    function showLoader(show) {
+        document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+    }
+    
+    function showToast(msg, isError = false) {
+        let toast = document.createElement('div');
+        toast.style.cssText = `position:fixed; bottom:20px; right:20px; background:${isError ? 'linear-gradient(135deg,#f093fb,#f5576c)' : 'linear-gradient(135deg,#11998e,#38ef7d)'}; color:white; padding:12px 24px; border-radius:50px; z-index:2100;`;
+        toast.innerText = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    async function callGSheet(action, method = 'GET', payload = {}) {
+        try {
+            const url = new URL(GOOGLE_SCRIPT_URL);
+            if (method === 'GET') {
+                url.searchParams.append('action', action);
+                for (let [k, v] of Object.entries(payload)) url.searchParams.append(k, v);
+                const resp = await fetch(url.toString());
+                return await resp.json();
+            } else {
+                const formData = new URLSearchParams();
+                formData.append('action', action);
+                formData.append('data', JSON.stringify(payload));
+                const resp = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: formData });
+                return await resp.json();
+            }
+        } catch (err) {
+            return { error: true, message: err.message };
+        }
+    }
+    
+    async function loadAllData() {
+        showLoader(true);
+        
+        const reg = await callGSheet('getAllStudents');
+        if (reg.success) studentData = reg.data;
+        
+        const pending = await callGSheet('getPendingRequests');
+        if (pending.success) pendingRequests = pending.data;
+        
+        const attend = await callGSheet('getAllAttendance');
+        if (attend.success) attendData = attend.data;
+        
+        const exam = await callGSheet('getAllExamMarks');
+        if (exam.success) examData = exam.data;
+        
+        const payment = await callGSheet('getAllPayments');
+        if (payment.success) paymentData = payment.data;
+        
+        const skill = await callGSheet('getAllSkills');
+        if (skill.success) skillData = skill.data;
+        
+        renderPendingRequests();
+        showLoader(false);
+    }
+    
+    function renderPendingRequests() {
+        const container = document.getElementById('pendingRequestsList');
+        const pendingList = Object.values(pendingRequests).filter(r => r.status === 'pending');
+        
+        if (pendingList.length === 0) {
+            container.innerHTML = '<p style="color: rgba(255,255,255,0.6);">No pending requests</p>';
+            return;
+        }
+        
+        container.innerHTML = pendingList.map(req => `
+            <div class="student-item pending-request">
+                <div>
+                    <strong style="color: white;">${req.name}</strong><br>
+                    <span style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">
+                        Grade: ${req.grade} | Phone: ${req.phone} | WhatsApp: ${req.whatsapp}
+                    </span>
+                </div>
+                <div>
+                    <button class="btn-3d btn-3d-success" style="padding: 0.5rem 1rem; margin-right: 0.5rem;" onclick="approveRequest('${req.requestId}')">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                    <button class="btn-3d btn-3d-danger" style="padding: 0.5rem 1rem;" onclick="rejectRequest('${req.requestId}')">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    async function approveRequest(requestId) {
+        const request = pendingRequests[requestId];
+        if (!request) return;
+        
+        showLoader(true);
+        
+        const newId = 'S' + String(Object.keys(studentData).length + 1).padStart(3, '0');
+        const newStudent = {
+            id: newId,
+            password: request.password,
+            name: request.name,
+            grade: request.grade,
+            phone: request.phone,
+            gender: request.gender,
+            address: request.address,
+            parent: request.parent,
+            birth: request.birth,
+            whatsapp: request.whatsapp,
+            status: 'approved'
+        };
+        
+        const result = await callGSheet('approveRegistration', 'POST', { requestId, student: newStudent });
+        
+        if (result.success) {
+            studentData[newId] = newStudent;
+            delete pendingRequests[requestId];
+            renderPendingRequests();
+            showToast(`Student ${newStudent.name} approved! ID: ${newId}`);
+            
+            // Send WhatsApp notification to student
+            const msg = `🎉 Congratulations! Your registration has been approved.\nStudent ID: ${newId}\nPassword: ${request.password}\nLogin at: My English Portal`;
+            window.open(`https://wa.me/${request.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
+        } else {
+            showToast("Error approving request", true);
+        }
+        
+        showLoader(false);
+    }
+    
+    async function rejectRequest(requestId) {
+        if (confirm("Reject this registration request?")) {
+            showLoader(true);
+            const result = await callGSheet('rejectRegistration', 'POST', { requestId });
+            if (result.success) {
+                delete pendingRequests[requestId];
+                renderPendingRequests();
+                showToast("Request rejected");
+            } else {
+                showToast("Error rejecting request", true);
+            }
+            showLoader(false);
+        }
+    }
+    
+    function handleAdminLogin() {
+        const user = document.getElementById('adminUser').value;
+        const pass = document.getElementById('adminPass').value;
+        if (adminCreds[user] && adminCreds[user] === pass) {
+            document.getElementById('loginPanel').classList.remove('active-panel');
+            document.getElementById('adminPanel').classList.add('active-panel');
+            loadAllData();
+            showToast("Welcome Admin!");
+        } else {
+            showToast("Invalid credentials!", true);
+        }
+    }
+    
+    function adminLogout() {
+        document.getElementById('adminPanel').classList.remove('active-panel');
+        document.getElementById('loginPanel').classList.add('active-panel');
+        document.getElementById('adminUser').value = '';
+        document.getElementById('adminPass').value = '';
+    }
+    
+    // Filter Function
+    async function filterData() {
+        const id = document.getElementById('filterId').value.trim().toUpperCase();
+        const sheet = document.getElementById('filterSheet').value;
+        if (!id) { showToast("Enter Student ID", true); return; }
+        
+        let result = `<h4 style="color: white;">Results for ${id}</h4>`;
+        
+        if (sheet === 'registration' && studentData[id]) {
+            const s = studentData[id];
+            result += `<p style="color: white;">Name: ${s.name}<br>Grade: ${s.grade}<br>Phone: ${s.phone}<br>Gender: ${s.gender}<br>Address: ${s.address}<br>Parent: ${s.parent}</p>`;
+        } else if (sheet === 'attend' && attendData[id]) {
+            result += `<p style="color: white;">Attendance Records:</p><ul style="color: white;">`;
+            for (let [date, status] of Object.entries(attendData[id])) {
+                result += `<li>${date}: ${status}</li>`;
+            }
+            result += `</ul>`;
+        } else if (sheet === 'exam' && examData[id]) {
+            result += `<p style="color: white;">Exam Marks:</p><ul style="color: white;">`;
+            for (let [date, mark] of Object.entries(examData[id])) {
+                result += `<li>${date}: ${mark}%</li>`;
+            }
+            result += `</ul>`;
+        } else if (sheet === 'payment' && paymentData[id]) {
+            result += `<p style="color: white;">Paid Months: ${paymentData[id].join(', ')}</p>`;
+        } else if (sheet === 'skill' && skillData[id]) {
+            const sk = skillData[id];
+            result += `<p style="color: white;">Grammar: ${sk.grammar}%<br>Writing: ${sk.writing}%<br>Reading: ${sk.reading}%<br>Spoken: ${sk.spoken}%</p>`;
+        } else {
+            result += `<p style="color: rgba(255,255,255,0.6);">No data found</p>`;
+        }
+        
+        document.getElementById('filterResult').innerHTML = result;
+    }
+    
+    // Registration
+    function openRegistration() {
+        const newId = 'S' + String(Object.keys(studentData).length + 1).padStart(3, '0');
+        document.getElementById('regId').value = newId;
+        document.getElementById('regPassword').value = Math.random().toString(36).substr(2, 8);
+        document.getElementById('regModal').style.display = 'flex';
+    }
+    
+    async function saveRegistration() {
+        const newStudent = {
+            id: document.getElementById('regId').value,
+            password: document.getElementById('regPassword').value,
+            name: document.getElementById('regName').value,
+            grade: document.getElementById('regGrade').value,
+            phone: document.getElementById('regPhone').value,
+            gender: document.getElementById('regGender').value,
+            address: document.getElementById('regAddress').value,
+            parent: document.getElementById('regParent').value,
+            whatsapp: document.getElementById('regWhatsapp').value,
+            status: 'approved'
+        };
+        
+        if (!newStudent.name || !newStudent.grade) { showToast("Name and Grade required!", true); return; }
+        
+        const result = await callGSheet('addStudent', 'POST', newStudent);
+        if (result.success) {
+            studentData[newStudent.id] = newStudent;
+            showToast("Student registered!");
+            closeModal('regModal');
+            document.getElementById('regForm').reset();
+        } else {
+            showToast("Error saving data", true);
+        }
+    }
+    
+    // Update
+    function openUpdateData() { document.getElementById('updateModal').style.display = 'flex'; }
+    
+    function loadStudentForUpdate() {
+        const id = document.getElementById('updateSearchId').value.trim().toUpperCase();
+        if (!studentData[id]) { showToast("Student not found!", true); return; }
+        const s = studentData[id];
+        document.getElementById('updateFormContainer').innerHTML = `
+            <div class="form-row"><div><label style="color:white;">Name</label><input id="upName" value="${s.name}" class="input-3d"></div>
+            <div><label style="color:white;">Grade</label><select id="upGrade" class="input-3d">${Array.from({length:13},(_,i)=>`<option ${s.grade===`Grade ${i+1}`?'selected':''}>Grade ${i+1}</option>`).join('')}</select></div></div>
+            <div class="form-row"><div><label style="color:white;">Phone</label><input id="upPhone" value="${s.phone||''}" class="input-3d"></div>
+            <div><label style="color:white;">Parent</label><input id="upParent" value="${s.parent||''}" class="input-3d"></div></div>
+            <div class="form-row"><div><label style="color:white;">Address</label><input id="upAddress" value="${s.address||''}" class="input-3d"></div>
+            <div><label style="color:white;">WhatsApp</label><input id="upWhatsapp" value="${s.whatsapp||''}" class="input-3d"></div></div>
+            <button class="btn-3d btn-3d-success" onclick="updateStudent('${id}')">Update</button>
+        `;
+    }
+    
+    async function updateStudent(id) {
+        studentData[id] = {
+            ...studentData[id],
+            name: document.getElementById('upName').value,
+            grade: document.getElementById('upGrade').value,
+            phone: document.getElementById('upPhone').value,
+            parent: document.getElementById('upParent').value,
+            address: document.getElementById('upAddress').value,
+            whatsapp: document.getElementById('upWhatsapp').value
+        };
+        await callGSheet('updateStudent', 'POST', studentData[id]);
+        showToast("Updated!");
+        closeModal('updateModal');
+    }
+    
+    async function deleteStudent() {
+        const id = document.getElementById('updateSearchId').value.trim().toUpperCase();
+        if (id && confirm(`Delete student ${id} permanently?`)) {
+            await callGSheet('deleteStudent', 'POST', { id });
+            delete studentData[id];
+            showToast("Deleted");
+            closeModal('updateModal');
+        }
+    }
+    
+    // Attendance
+    function openAttendance() {
+        document.getElementById('attendModal').style.display = 'flex';
+        const grades = Array.from({length:13}, (_,i) => `Grade ${i+1}`);
+        document.getElementById('attendGrades').innerHTML = grades.map(g => `<div class="grade-card" onclick="showAttendStudents('${g}')">${g}</div>`).join('');
+        document.getElementById('attendStudentList').innerHTML = '';
+    }
+    
+    function showAttendStudents(grade) {
+        const students = Object.values(studentData).filter(s => s.grade === grade);
+        const today = new Date().toISOString().slice(0,10);
+        if (students.length === 0) {
+            document.getElementById('attendStudentList').innerHTML = '<p style="color: white;">No students in this grade</p>';
+            return;
+        }
+        document.getElementById('attendStudentList').innerHTML = `
+            <h3 style="color:white;">${grade} - ${today}</h3>
+            ${students.map(s => `<div class="student-item"><span>${s.id} - ${s.name}</span>
+            <label style="color:white;"><input type="radio" name="att_${s.id}" value="present"> Present
+            <input type="radio" name="att_${s.id}" value="absent"> Absent</label></div>`).join('')}
+            <button class="btn-3d btn-3d-success" onclick="saveAttendance('${grade}', '${today}')">Save Attendance</button>
+        `;
+    }
+    
+    async function saveAttendance(grade, date) {
+        const students = Object.values(studentData).filter(s => s.grade === grade);
+        for (let s of students) {
+            const val = document.querySelector(`input[name="att_${s.id}"]:checked`);
+            if (val) {
+                if (!attendData[s.id]) attendData[s.id] = {};
+                attendData[s.id][date] = val.value;
+                await callGSheet('markAttendance', 'POST', { id: s.id, grade, date, status: val.value });
+            }
+        }
+        showToast("Attendance saved!");
+        closeModal('attendModal');
+    }
+    
+    // Exam Marks
+    function openExamMarks() {
+        document.getElementById('examModal').style.display = 'flex';
+        const grades = Array.from({length:13}, (_,i) => `Grade ${i+1}`);
+        document.getElementById('examGrades').innerHTML = grades.map(g => `<div class="grade-card" onclick="showExamStudents('${g}')">${g}</div>`).join('');
+    }
+    
+    function showExamStudents(grade) {
+        const students = Object.values(studentData).filter(s => s.grade === grade);
+        const date = document.getElementById('examDate').value || new Date().toISOString().slice(0,7);
+        if (students.length === 0) {
+            document.getElementById('examStudentList').innerHTML = '<p style="color: white;">No students in this grade</p>';
+            return;
+        }
+        document.getElementById('examStudentList').innerHTML = `
+            <h3 style="color:white;">${grade} - Enter Marks (${date})</h3>
+            ${students.map(s => `<div class="student-item"><span>${s.id} - ${s.name}</span>
+            <input type="number" id="mark_${s.id}" placeholder="Mark (0-100)" min="0" max="100" style="width:120px; padding:8px; border-radius:2rem;"></div>`).join('')}
+            <button class="btn-3d btn-3d-success" onclick="saveExamMarks('${grade}', '${date}')">Save All</button>
+        `;
+    }
+    
+    async function saveExamMarks(grade, date) {
+        const students = Object.values(studentData).filter(s => s.grade === grade);
+        for (let s of students) {
+            const mark = document.getElementById(`mark_${s.id}`).value;
+            if (mark && mark >= 0 && mark <= 100) {
+                if (!examData[s.id]) examData[s.id] = {};
+                examData[s.id][date] = parseInt(mark);
+                await callGSheet('addExamMark', 'POST', { id: s.id, grade, date, mark: parseInt(mark) });
+            }
+        }
+        showToast("Exam marks saved!");
+        closeModal('examModal');
+    }
+    
+    // Skills
+    function openSkills() {
+        document.getElementById('skillModal').style.display = 'flex';
+        const grades = Array.from({length:13}, (_,i) => `Grade ${i+1}`);
+        document.getElementById('skillGrades').innerHTML = grades.map(g => `<div class="grade-card" onclick="showSkillStudents('${g}')">${g}</div>`).join('');
+    }
+    
+    function showSkillStudents(grade) {
+        const students = Object.values(studentData).filter(s => s.grade === grade);
+        if (students.length === 0) {
+            document.getElementById('skillStudentList').innerHTML = '<p style="color: white;">No students in this grade</p>';
+            return;
+        }
+        document.getElementById('skillStudentList').innerHTML = `
+            <h3 style="color:white;">${grade} - Update Skills</h3>
+            ${students.map(s => `<div class="student-item"><span><strong>${s.id} - ${s.name}</strong></span>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <input type="number" id="gram_${s.id}" placeholder="Grammar %" min="0" max="100" style="width:90px; padding:8px; border-radius:2rem;">
+                <input type="number" id="writ_${s.id}" placeholder="Writing %" min="0" max="100" style="width:90px; padding:8px; border-radius:2rem;">
+                <input type="number" id="read_${s.id}" placeholder="Reading %" min="0" max="100" style="width:90px; padding:8px; border-radius:2rem;">
+                <input type="number" id="spok_${s.id}" placeholder="Spoken %" min="0" max="100" style="width:90px; padding:8px; border-radius:2rem;">
+            </div></div>`).join('')}
+            <button class="btn-3d btn-3d-success" onclick="saveSkills('${grade}')">Save Skills</button>
+        `;
+    }
+    
+    async function saveSkills(grade) {
+        const students = Object.values(studentData).filter(s => s.grade === grade);
+        for (let s of students) {
+            const grammar = document.getElementById(`gram_${s.id}`).value;
+            const writing = document.getElementById(`writ_${s.id}`).value;
+            const reading = document.getElementById(`read_${s.id}`).value;
+            const spoken = document.getElementById(`spok_${s.id}`).value;
+            
+            if (grammar || writing || reading || spoken) {
+                skillData[s.id] = { 
+                    grammar: parseInt(grammar) || 0, 
+                    writing: parseInt(writing) || 0, 
+                    reading: parseInt(reading) || 0, 
+                    spoken: parseInt(spoken) || 0 
+                };
+                await callGSheet('updateSkill', 'POST', { id: s.id, skills: skillData[s.id] });
+            }
+        }
+        showToast("Skills updated!");
+        closeModal('skillModal');
+    }
+    
+    // Payments
+    function openPayments() {
+        document.getElementById('paymentModal').style.display = 'flex';
+        const grades = Array.from({length:13}, (_,i) => `Grade ${i+1}`);
+        document.getElementById('paymentGrades').innerHTML = grades.map(g => `<div class="grade-card" onclick="showPaymentStudents('${g}')">${g}</div>`).join('');
+    }
+    
+    function showPaymentStudents(grade) {
+        const students = Object.values(studentData).filter(s => s.grade === grade);
+        const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        if (students.length === 0) {
+            document.getElementById('paymentStudentList').innerHTML = '<p style="color: white;">No students in this grade</p>';
+            return;
+        }
+        document.getElementById('paymentStudentList').innerHTML = `
+            <h3 style="color:white;">${grade} - Mark Fees</h3>
+            ${students.map(s => {
+                const paid = (paymentData[s.id] || []);
+                return `<div class="student-item"><span><strong>${s.id} - ${s.name}</strong></span>
+                <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                    ${months.map(m => `<button class="btn-3d" style="padding:5px 12px; font-size:0.8rem; ${paid.includes(m)?'background:#11998e':''}" onclick="markPayment('${s.id}','${m}')">${m}</button>`).join('')}
+                </div></div>`;
+            }).join('')}
+        `;
+    }
+    
+    async function markPayment(id, month) {
+        if (!paymentData[id]) paymentData[id] = [];
+        if (!paymentData[id].includes(month)) {
+            paymentData[id].push(month);
+            await callGSheet('addPayment', 'POST', { id, month });
+            showToast(`Payment marked for ${month}`);
+            openPayments();
+        } else {
+            showToast(`Already paid for ${month}`);
+        }
+    }
+    
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    
+    document.getElementById('adminLoginBtn').addEventListener('click', handleAdminLogin);
+    document.getElementById('adminLogoutBtn').addEventListener('click', adminLogout);
+    document.getElementById('filterBtn').addEventListener('click', filterData);
+    
+    console.log("Admin Panel Ready");
+</script>
+</body>
+</html>
