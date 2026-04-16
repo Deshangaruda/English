@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>My English· Smart Student Portal | Google Sheets Sync</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="shortcut icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2300c6a7'/%3E%3C/svg%3E" type="image/x-icon">
+       <link rel="shortcut icon" href="image/icon.png" type="image/x-icon">
+    <link rel="icon" href="image/icon.png" sizes="32*32">
+    <link rel="icon" href="image/icon.png" sizes="48*48">
+    <link rel="icon" href="image/icon.png" sizes="96*96">
+    <link rel="icon" href="image/icon.png" sizes="144*144">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+        body{min-height:100vh;background:radial-gradient(circle at 10% 30%,#e0f0ff,#9ae4c8);background-attachment:fixed;padding:1rem;transition:all 0.2s ease}
+        .glass-card{background:rgba(255,255,255,0.28);backdrop-filter:blur(16px);border-radius:2rem;box-shadow:0 20px 35px -12px rgba(0,0,0,0.2),0 0 0 1px rgba(255,255,255,0.45);transition:transform 0.25s ease,box-shadow 0.2s;padding:1.5rem}
+        .glass-card:hover{transform:translateY(-3px);box-shadow:0 28px 40px -16px rgba(0,0,0,0.25)}
+        .btn-glass{background:rgba(255,248,225,0.35);border:none;backdrop-filter:blur(8px);padding:0.75rem 1.8rem;border-radius:3rem;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;color:#1a5c3a;box-shadow:0 2px 5px rgba(0,0,0,0.05)}
+        .btn-glass-primary{background:#05ff97;color:white;box-shadow:0 6px 14px rgba(44,160,121,0.3)}
+        .btn-glass-primary:hover{background:#1ef3c5;transform:scale(1.02)}
+        .btn-glass:hover{background:rgba(255,255,245,0.7);transform:translateY(-2px)}
+        input,select{background:rgba(255,255,250,0.9);border:1px solid rgba(255,255,255,0.6);border-radius:2.5rem;padding:0.8rem 1.2rem;font-size:0.95rem;outline:none;width:100%;transition:0.2s}
+        input:focus,select:focus{background:white;box-shadow:0 0 0 3px rgba(44,160,88,0.4);border-color:transparent}
+        .container{max-width:1400px;width:100%;margin:0 auto}
+        .panel{display:none;animation:fadeSlideUp 0.45s cubic-bezier(0.2,0.9,0.4,1.1)}
+        .active-panel{display:block}
+        @keyframes fadeSlideUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+        .grid-2cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.2rem}
+        .dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.8rem;margin-top:1.8rem}
+        .info-row{display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px dashed rgba(0,0,0,0.15);flex-wrap:wrap;gap:0.5rem}
+        .badge-modern{background:#40ff89;color:white;border-radius:2rem;padding:0.3rem 1rem;font-size:0.75rem;font-weight:600;display:inline-block}
+        .payment-month{display:inline-flex;align-items:center;justify-content:center;min-width:70px;background:#f1f5f9;border-radius:2rem;padding:0.6rem 0;margin:0.4rem;font-weight:600;font-size:0.85rem;cursor:pointer;transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+        .paid-circle{background:linear-gradient(135deg,#2ecc71,#27ae60);color:white;box-shadow:0 4px 10px rgba(46,204,113,0.4)}
+        .paid-circle::before{content:"✓ ";font-weight:bold}
+        .clickable-bar{cursor:pointer;transition:0.2s;border-radius:2rem;padding:0.2rem 0.2rem;display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem}
+        .clickable-bar:hover{background:rgba(255,255,210,0.4);transform:scale(1.01)}
+        .contact-tile{display:flex;align-items:center;gap:0.8rem;background:rgba(255,255,245,0.507);border-radius:1.5rem;padding:0.7rem 1rem;margin:0.8rem 0;transition:0.2s;flex-wrap:wrap}
+        .contact-tile a{text-decoration:none;font-weight:600;color:#1e4663;word-break:break-word}
+        .contact-tile i{font-size:1.4rem;width:2rem;color:#2ecc71}
+        footer{margin-top:2rem;text-align:center;font-size:0.75rem;color:#1e3a4d;font-weight:500}
+        .loader-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:2000;display:none;justify-content:center;align-items:center;flex-direction:column;gap:20px;color:white}
+        .spinner{width:60px;height:60px;border:6px solid rgba(255,255,255,0.3);border-top:6px solid #2ca079;border-radius:50%;animation:spin 1s linear infinite}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .toast-msg{position:fixed;bottom:30px;right:30px;background:#2c3e50;color:white;padding:12px 24px;border-radius:40px;z-index:2100;backdrop-filter:blur(8px)}
+        .skill-bar-bg{flex:1;min-width:120px;background:#e2e8f0;border-radius:2rem;overflow:hidden}
+        .skill-fill{border-radius:2rem;text-align:right;padding-right:6px;color:white;font-size:0.7rem;line-height:1.6rem}
+        @media (max-width:760px){body{padding:0.7rem}.grid-2cols{grid-template-columns:1fr}.dashboard-grid{grid-template-columns:1fr}.glass-card{border-radius:1.5rem;padding:1.2rem!important}.payment-month{min-width:65px;font-size:0.75rem}.btn-glass{padding:0.6rem 1.2rem;font-size:0.85rem}}
+        .admin-link{position:fixed;bottom:20px;left:20px;z-index:100;background:rgba(255,255,255,0.5);padding:8px 16px;border-radius:30px;backdrop-filter:blur(5px)}
+        .admin-link a{color:#1e3a4d;text-decoration:none;font-weight:600}
+    </style>
+</head>
+<body>
+
+<div class="loader-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div style="font-size:24px;font-weight:bold">Loading...</div>
+</div>
+
+<div class="container">
+    <!-- LOGIN PANEL -->
+    <div id="loginPanel" class="panel active-panel glass-card" style="padding:2rem;max-width:520px;margin:2rem auto">
+        <div style="text-align:center;margin-bottom:1.2rem">
+            <i class="fas fa-graduation-cap" style="font-size:3rem;color:#43f7b2"></i>
+            <h2 style="font-weight:800;margin-top:0.5rem">My English Access</h2>
+            <p>powered by <strong>Google Sheets</strong> sync</p>
+        </div>
+        <div style="margin-bottom:1rem">
+            <label><i class="fas fa-id-card"></i> Student ID</label>
+            <input type="text" id="loginId" placeholder="e.g., S001" autocomplete="off">
+        </div>
+        <div style="margin-bottom:1.5rem">
+            <label><i class="fas fa-lock"></i> Password</label>
+            <input type="password" id="loginPass" placeholder="••••••">
+        </div>
+        <button id="doLoginBtn" class="btn-glass btn-glass-primary" style="width:100%"><i class="fas fa-sign-in-alt"></i> Login to Dashboard</button>
+        <div style="display:flex;justify-content:space-between;gap:0.8rem;margin-top:1.2rem;flex-wrap:wrap">
+            <button id="forgotBtn" class="btn-glass"><i class="fab fa-whatsapp"></i> Forgot Pwd</button>
+            <button id="joinRequestBtn" class="btn-glass"><i class="fas fa-user-plus"></i> Join Request</button>
+        </div>
+        <div style="margin-top:1.5rem;text-align:center">
+            <button id="showRegFormBtn" class="btn-glass" style="background:transparent">New Student? Register Here</button>
+        </div>
+        <div id="loginMessage" style="margin-top:1.2rem;font-size:0.85rem;text-align:center"></div>
+    </div>
+
+    <!-- SELF REGISTRATION PANEL (PENDING APPROVAL) -->
+    <div id="selfRegPanel" class="panel glass-card" style="padding:2rem;max-width:600px;margin:2rem auto">
+        <div style="text-align:center;margin-bottom:1.5rem">
+            <i class="fas fa-user-plus" style="font-size:2.5rem;color:#43f7b2"></i>
+            <h2 style="font-weight:700;margin-top:0.5rem">Registration Request</h2>
+            <p style="font-size:0.85rem">Submit your details. Admin will approve within 1-2 days.</p>
+        </div>
+        <form id="selfRegForm">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                <div><label>Full Name *</label><input name="name" required></div>
+                <div><label>Password *</label><input type="password" name="password" required></div>
+                <div><label>Grade *</label><select name="grade" required>
+                    ${Array.from({length: 13}, (_, i) => `<option value="${i+1}">Grade ${i+1}</option>`).join('')}
+                </select></div>
+                <div><label>Phone *</label><input name="phone" required></div>
+                <div><label>Gender</label><select name="gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+                <div><label>Birth Date</label><input type="date" name="birth"></div>
+            </div>
+            <div style="margin-top:1rem"><label>Address</label><input name="address"></div>
+            <div style="margin-top:1rem"><label>Parent Info</label><input name="parentInf"></div>
+            <div style="display:flex;gap:1rem;margin-top:1.5rem">
+                <button type="submit" class="btn-glass btn-glass-primary">Submit Request</button>
+                <button type="button" class="btn-glass" id="backToLoginFromReg">Back to Login</button>
+            </div>
+        </form>
+        <p style="margin-top:1rem;font-size:0.75rem;color:#555"><i class="fas fa-info-circle"></i> You'll receive your Student ID after approval.</p>
+    </div>
+
+    <!-- STUDENT DASHBOARD -->
+    <div id="profilePanel" class="panel glass-card" style="padding:1.8rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                <div style="background:#08faa9;width:48px;height:48px;border-radius:3rem;display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem">
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+                <h2><i class="fas fa-chalkboard-user"></i> Student Hub</h2>
+            </div>
+            <button id="logoutBtn" class="btn-glass"><i class="fas fa-power-off"></i> Exit</button>
+        </div>
+        
+        <div class="glass-card" style="padding:1.2rem;margin:1.2rem 0">
+            <div class="grid-2cols">
+                <div><i class="fas fa-user"></i> <strong>Full Name:</strong> <span id="profileName">—</span></div>
+                <div><i class="fas fa-chart-line"></i> <strong>Grade:</strong> <span id="profileGrade">—</span></div>
+                <div><i class="fas fa-calendar-check"></i> <strong>Class Status:</strong> <span id="inClassStatus" class="badge-modern">—</span></div>
+                <div><i class="fas fa-history"></i> <strong>Last Attendance:</strong> <span id="lastAttendDate">—</span></div>
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="glass-card" style="padding:1.3rem">
+                <h3><i class="fas fa-chart-pie"></i> Exam & Skill Insight</h3>
+                <div style="margin:12px 0 6px">
+                    <label><i class="fas fa-scroll"></i> Select paper:</label>
+                    <select id="paperSelect" style="margin-top:5px"></select>
+                </div>
+                <div style="display:flex;justify-content:center;margin:8px 0">
+                    <canvas id="pieChartCanvas" width="200" height="200" style="max-height:210px;max-width:100%"></canvas>
+                </div>
+                <div id="skillBarsContainer" style="margin-top:12px"></div>
+                <div id="weaknessDetail" style="margin-top:12px"></div>
+            </div>
+            
+            <div class="glass-card" style="padding:1.3rem">
+                <h3><i class="fas fa-coins"></i> Fee Tracker (Yearly)</h3>
+                <div id="paymentGrid" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px 0"></div>
+                <div id="paymentCardModal" style="margin-top:16px;border-radius:1.2rem;background:rgba(0,0,0,0.05);padding:10px"></div>
+                <div class="info-row" style="margin-top:12px"><span>📌 Click any month → view receipt</span></div>
+            </div>
+            
+            <div class="glass-card" style="padding:1.3rem">
+                <h3><i class="fas fa-phone-alt"></i> Teacher & Support</h3>
+                <div class="contact-tile"><i class="fas fa-chalkboard-user"></i><span><strong>Class Teacher:</strong> Ms.Madhavi</span></div>
+                <div class="contact-tile"><i class="fas fa-phone-volume"></i><a href="tel:+94767899845"><strong>📞 +94 76 789 9845</strong></a></div>
+                <div class="contact-tile"><i class="fab fa-whatsapp" style="color:#25D366"></i><a href="https://wa.me/94754551129" target="_blank"><strong>WhatsApp Support</strong> → Click to chat</a></div>
+                <div class="contact-tile"><i class="fas fa-envelope"></i><span>madhavi@gmail.com</span></div>
+                <hr style="margin:14px 0;opacity:0.4">
+                <div style="background:rgba(255,248,225,0.5);border-radius:1.5rem;padding:0.9rem">
+                    <h4><i class="fas fa-star-of-life"></i> About</h4>
+                    <p style="font-size:0.85rem;line-height:1.4">🏆 Real-time Google Sheets sync for marks, attendance & fees.</p>
+                </div>
+            </div>
+        </div>
+        <footer><i class="fas fa-database"></i> Live from Google Sheets • Developed by <strong>Thuli</strong></footer>
+    </div>
+</div>
+
+<div class="admin-link"><a href="index.html"><i class="fas fa-crown"></i> Back</a></div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwumNMK6FaERqey8yyGVu9xw97N_duzRqH7mr5Tinfr_5TvbI2Ioz_nEzC84rUqJ2fX/exec";
+    
+    function showLoader(s){document.getElementById('loadingOverlay').style.display=s?'flex':'none'}
+    function showToast(m,e=false){let t=document.createElement('div');t.className='toast-msg';t.style.background=e?'#e67e22':'#2ecc71';t.innerText=m;document.body.appendChild(t);setTimeout(()=>t.remove(),3000)}
+    
+    async function apiCall(action,method='GET',payload={}){
+        try{
+            let url=new URL(SCRIPT_URL);
+            if(method==='GET'){
+                url.searchParams.append('action',action);
+                Object.entries(payload).forEach(([k,v])=>v&&url.searchParams.append(k,v));
+                let r=await fetch(url);return await r.json();
+            }else{
+                let f=new URLSearchParams();f.append('action',action);f.append('data',JSON.stringify(payload));
+                let r=await fetch(SCRIPT_URL,{method:'POST',body:f});return await r.json();
+            }
+        }catch(e){return{error:true,message:e.message}}
+    }
+
+    let currentStudent=null,pieChart=null,currentPapers=[],currentPaperIndex=0;
+
+    // Login
+    async function performLogin(){
+        let id=document.getElementById('loginId').value.trim(),pwd=document.getElementById('loginPass').value.trim();
+        if(!id||!pwd){showToast('Enter ID and Password',true);return}
+        showLoader(true);
+        let r=await apiCall('getStudentData','GET',{id});
+        if(r.success&&r.data&&String(r.data.password)===pwd){
+            currentStudent=r.data;
+            await loadProfile(currentStudent);
+            await renderExamAnalysis(currentStudent.id);
+            await renderPayment(currentStudent.id);
+            document.getElementById('loginPanel').classList.remove('active-panel');
+            document.getElementById('profilePanel').classList.add('active-panel');
+            showToast(`Welcome, ${currentStudent.name}!`);
+        }else{showToast('Invalid credentials',true);document.getElementById('loginMessage').innerHTML="<i class='fas fa-times-circle'></i> Invalid ID/Password"}
+        showLoader(false);
+    }
+
+    async function loadProfile(s){
+        document.getElementById('profileName').innerText=s.name;
+        document.getElementById('profileGrade').innerText=s.grade;
+        let att=await apiCall('getAttendance','GET',{id:s.id});
+        let records=att.success?att.data:[];
+        let presentDates=records.filter(a=>a.status==='Present').map(a=>a.date).sort().reverse();
+        document.getElementById('lastAttendDate').innerText=presentDates.length?presentDates[0]:'Never';
+        let today=new Date().toISOString().slice(0,10);
+        let todayPresent=records.some(a=>a.date===today&&a.status==='Present');
+        document.getElementById('inClassStatus').innerHTML=todayPresent?'✅ Active':'⏳ Inactive';
+    }
+
+    async function renderExamAnalysis(id){
+        let marks=await apiCall('getExamMarks','GET',{id});
+        let skills=await apiCall('getSkill','GET',{id});
+        let skillData=skills.success?skills.data:{grammar:0,writing:0,reading:0,spoken:0};
+        let paperMap=new Map();
+        (marks.success?marks.data:[]).forEach(m=>{if(!paperMap.has(m.date))paperMap.set(m.date,parseInt(m.mark)||0)});
+        currentPapers=Array.from(paperMap.entries()).map(([d,m])=>({paperName:`Exam - ${d}`,marks:m,skills:skillData}));
+        currentPapers.sort((a,b)=>new Date(b.paperName.split(' - ')[1])-new Date(a.paperName.split(' - ')[1]));
+        let sel=document.getElementById('paperSelect');
+        sel.innerHTML=currentPapers.length?currentPapers.map((p,i)=>`<option value="${i}">${p.paperName} (${p.marks}/100)</option>`).join(''):'<option>No exams</option>';
+        sel.onchange=e=>{currentPaperIndex=parseInt(e.target.value);updatePieAndBars()};
+        if(currentPapers.length)updatePieAndBars();
+    }
+
+    function updatePieAndBars(){
+        if(!currentPapers.length)return;
+        let p=currentPapers[currentPaperIndex];
+        let ctx=document.getElementById('pieChartCanvas').getContext('2d');
+        if(pieChart)pieChart.destroy();
+        pieChart=new Chart(ctx,{type:'pie',data:{labels:['Your Score','Remaining'],datasets:[{data:[p.marks,100-p.marks],backgroundColor:['#3498db','#eef2f5']}]},options:{plugins:{legend:{position:'bottom'}}}});
+        let skills=p.skills,container=document.getElementById('skillBarsContainer');
+        container.innerHTML="<strong><i class='fas fa-chart-simple'></i> Skill levels</strong><br>";
+        ['grammar','writing','reading','spoken'].forEach(s=>{
+            let v=skills[s]||0;
+            let div=document.createElement('div');div.className='clickable-bar';div.style.margin='10px 0';
+            div.innerHTML=`<span style="display:inline-block;width:100px;font-weight:500">${s.toUpperCase()}</span><div class="skill-bar-bg"><div class="skill-fill" style="width:${v}%;background:linear-gradient(90deg,#2c7da0,#5fa7c5)">${v}%</div></div>`;
+            div.addEventListener('click',()=>{
+                let advice=v<50?`⚠️ Critical weakness in ${s}.`:v<70?`📌 Moderate improvement needed.`:`✅ Strong ${s} ability!`;
+                document.getElementById('weaknessDetail').innerHTML=`<div style="background:#fff3e0;border-radius:1.2rem;padding:0.8rem;border-left:6px solid #f39c12"><i class="fas fa-lightbulb"></i> <strong>${s.toUpperCase()}:</strong> ${advice}</div>`;
+            });
+            container.appendChild(div);
+        });
+    }
+
+    async function renderPayment(id){
+        let payments=await apiCall('getPayments','GET',{id});
+        let paidSet=new Set((payments.success?payments.data:[]).map(p=>p.month));
+        let months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        let container=document.getElementById('paymentGrid');container.innerHTML='';
+        months.forEach(m=>{
+            let d=document.createElement('div');d.className='payment-month'+(paidSet.has(m)?' paid-circle':'');
+            d.style.background=paidSet.has(m)?'linear-gradient(145deg,#2ecc71,#239b56)':'#eef2f5';
+            d.style.color=paidSet.has(m)?'white':'#2c3e50';
+            d.textContent=m;
+            d.addEventListener('click',()=>{
+                document.getElementById('paymentCardModal').innerHTML=paidSet.has(m)?
+                    `<div style="background:white;border-radius:1.3rem;padding:1rem"><i class="fas fa-receipt"></i> <strong>Payment confirmed</strong><br>📆 ${m}<br>👤 ${currentStudent.name}<br>💰 LKR 1,000</div>`:
+                    `<div style="background:#ffe0b3;border-radius:1.3rem;padding:1rem"><i class="fas fa-exclamation-triangle"></i> <strong>Unpaid</strong><br>${m} fees pending.</div>`;
+            });
+            container.appendChild(d);
+        });
+    }
+
+    // Self Registration
+    document.getElementById('selfRegForm')?.addEventListener('submit',async e=>{
+        e.preventDefault();let fd=new FormData(e.target),data={};fd.forEach((v,k)=>data[k]=v);
+        showLoader(true);let r=await apiCall('pendingRegistration','POST',data);showLoader(false);
+        if(r.success){showToast(`Request submitted! Your temporary ID: ${r.id}. Wait for approval.`);document.getElementById('backToLoginFromReg').click()}
+        else showToast(r.message,true);
+    });
+
+    document.getElementById('showRegFormBtn')?.addEventListener('click',()=>{
+        document.getElementById('loginPanel').classList.remove('active-panel');
+        document.getElementById('selfRegPanel').classList.add('active-panel');
+    });
+    document.getElementById('backToLoginFromReg')?.addEventListener('click',()=>{
+        document.getElementById('selfRegPanel').classList.remove('active-panel');
+        document.getElementById('loginPanel').classList.add('active-panel');
+    });
+    document.getElementById('doLoginBtn')?.addEventListener('click',performLogin);
+    document.getElementById('forgotBtn')?.addEventListener('click',()=>{
+        let id=document.getElementById('loginId').value.trim()||'unknown';
+        window.open(`https://wa.me/94754551129?text=Password recovery for ID: ${id}`,'_blank');
+    });
+    document.getElementById('joinRequestBtn')?.addEventListener('click',()=>{
+        window.open('https://wa.me/94754551129?text=I would like to join EduFlow classes','_blank');
+    });
+    document.getElementById('logoutBtn')?.addEventListener('click',()=>{
+        currentStudent=null;if(pieChart)pieChart.destroy();
+        document.getElementById('profilePanel').classList.remove('active-panel');
+        document.getElementById('loginPanel').classList.add('active-panel');
+        document.getElementById('loginId').value='';document.getElementById('loginPass').value='';
+    });
+    document.getElementById('loginId')?.addEventListener('keypress',e=>{if(e.key==='Enter')performLogin()});
+    document.getElementById('loginPass')?.addEventListener('keypress',e=>{if(e.key==='Enter')performLogin()});
+</script>
+</body>
+</html>
