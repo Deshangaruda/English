@@ -599,7 +599,7 @@
         <div class="login-container">
             <div class="glass-panel">
                 <div class="login-header">
-                    <i class="fas fa-crown"></i>
+                    <i class='fas fa-user-shield'></i>
                     <h2>Admin Portal</h2>
                     <p style="color: rgba(10, 5, 5, 0.8); margin-top: 8px;">Data Management</p>
                 </div>
@@ -695,7 +695,7 @@
 
 <script>
     // ==================== CONFIGURATION ====================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwumNMK6FaERqey8yyGVu9xw97N_duzRqH7mr5Tinfr_5TvbI2Ioz_nEzC84rUqJ2fX/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhzkuR-2CRZ27RMG_EfBecVWGujQEnixCn4WEoB_JQfAOhRwJn5SP1hHMpQJCEaq7u/exec";
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     
     // ==================== HELPER FUNCTIONS ====================
@@ -760,7 +760,7 @@
         let u = document.getElementById('adminUser').value;
         let p = document.getElementById('adminPass').value;
         
-        if (u === 'Thuli' && p === '001@Thuli_$Deshan:T1-M:T') {
+        if (u === 'Thuli' ,'001@U_M_R:ADMIN' && p === '001@Thuli_$Deshan:T1-M:T', 'E001@U_M_R:Admin-M/T')  {
             document.getElementById('adminLoginPanel').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'block';
             loadPendingCount();
