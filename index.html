@@ -450,6 +450,23 @@
       background: #07c299;
     }
 
+    .login-section input.error {
+  background: rgba(255, 80, 80, 0.15) !important;
+  border: 2px solid #ff4757 !important;
+  color: #ff4757 !important;
+  animation: shake 0.3s ease;
+}
+
+.login-section input.error::placeholder {
+  color: #ff4757 !important;
+  font-weight: 500;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
   </style>
 </head>
 <body>
@@ -585,13 +602,11 @@
         <a href="#"><i class="fab fa-facebook"></i> Facebook</a>
         <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
       </div>
-     <div class="footer-col">
+  <div class="footer-col">
   <h4>Admin Login</h4>
   <div class="login-section">
     <input type="password" placeholder="Password" id="loginPass1">
     <button id="loginBtn1">Login</button>
-<br>
-    <p id="error-message1" class="hidden1" style="color: red; display: none;">Invalid Password!</p>
   </div>
 </div>
       <div class="copyright">
