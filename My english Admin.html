@@ -861,20 +861,40 @@ if (themeToggle) {
         }
     });
     
-    // ==================== ADMIN LOGIN ====================
-    document.getElementById('adminLoginBtn').addEventListener('click', function() {
-        let u = document.getElementById('adminUser').value;
-        let p = document.getElementById('adminPass').value;
-        
-        if (u === 'Thuli' ,'001@U_M_R:ADMIN' && p === '001@Thuli_$Deshan:T1-M:T', 'E001@U_M_R:Admin-M/T')  {
-            document.getElementById('adminLoginPanel').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'block';
-            loadPendingCount();
-            showToast('Welcome, Admin!');
-        } else {
-            document.getElementById('adminLoginMsg').innerHTML = '<i class="fas fa-exclamation-circle"></i> Invalid credentials!';
-        }
-    });
+       // ==================== ADMIN LOGIN ====================
+document.getElementById('adminLoginBtn').addEventListener('click', function() {
+    let u = document.getElementById('adminUser').value;
+    let p = document.getElementById('adminPass').value;
+    
+    // Username + Password yugala check karanna
+    if ((u === 'Thuli' && p === '001@Thuli_$Deshan:T1-M:T')) {
+        // Thuli + 001@U_M_R:ADMIN
+        document.getElementById('adminLoginPanel').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'block';
+        loadDashboardStats();
+        loadPendingCount();
+        showToast('Welcome, Admin Thuli!');
+    }
+    else if (u === '001@U_M_R:ADMIN' && p === 'E001@U_M_R:Admin-M/T') {
+        // Username: 001@U_M_R:ADMIN, Password: 001@Thuli_$Deshan:T1-M:T
+        document.getElementById('adminLoginPanel').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'block';
+        loadDashboardStats();
+        loadPendingCount();
+        showToast('Welcome, Madhavi Teacher!');
+    }
+    else if (u === 'Madhavi' && p === 'E001@U_M_R:Admin-M/T') {
+        // Username + Password same
+        document.getElementById('adminLoginPanel').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'block';
+        loadDashboardStats();
+        loadPendingCount();
+        showToast('Welcome, Madhavi Teacher!');
+    }
+    else {
+        document.getElementById('adminLoginMsg').innerHTML = '<i class="fas fa-exclamation-circle"></i> Invalid credentials!';
+    }
+});
     
     // Enter key for login
     document.getElementById('adminPass').addEventListener('keypress', function(e) {
