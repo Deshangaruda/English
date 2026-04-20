@@ -420,35 +420,7 @@
     i {
       margin-right: 6px;
     }
-     .login-section {
-      background: rgba(88, 247, 199, 0.5);
-      backdrop-filter: blur(8px);
-      padding: 0.5rem 1.2rem;
-      border-radius: 40px;
-      display: flex;
-      gap: 10px;
-    }
-    .login-section input {
-      background: rgba(255,255,255,0.7);
-      border: none;
-      padding: 6px 12px;
-      border-radius: 30px;
-      outline: none;
-      font-size: 0.8rem;
-    }
-    .login-section button {
-      background: #25ebba;
-      border: none;
-      padding: 6px 16px;
-      border-radius: 30px;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .login-section button:hover {
-      background: #07c299;
-    }
+     
     /* Theme Toggle Button */
 .theme-toggle {
     position: fixed;
@@ -583,6 +555,52 @@ body.dark-mode .close-menu {
     body:not(.light-mode-forced) h3 {
         color: #f0f0f0 !important;
     }
+}
+.login-section {
+      background: rgba(88, 247, 199, 0.5);
+      backdrop-filter: blur(8px);
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      display: flex;
+      gap: 10px;
+    }
+    .login-section input {
+      background: rgba(255,255,255,0.7);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 30px;
+      outline: none;
+      font-size: 0.8rem;
+    }
+    .login-section button {
+      background: #25ebba;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 30px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .login-section button:hover {
+      background: #07c299;
+    }
+    .login-section input.error {
+  background: rgba(255, 80, 80, 0.15) !important;
+  border: 2px solid #ff4757 !important;
+  color: #ff4757 !important;
+  animation: shake 0.3s ease;
+}
+
+.login-section input.error::placeholder {
+  color: #ff4757 !important;
+  font-weight: 500;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
   </style>
@@ -726,10 +744,8 @@ body.dark-mode .close-menu {
       <div class="footer-col">
         <h4>Admin Login</h4>
         <div class="login-section" >
-          <input type="password" placeholder="Password" id="loginPass">
-          <button id="loginBtn">Login</button>
-          <p id="error-message" class="hidden1" style="color: red;"></a>
-          </p>
+          <input type="password" placeholder="Password" id="loginPass1">
+          <button id="loginBtn1">Login</button>
         </div>
       </div>
       <div class="copyright">
