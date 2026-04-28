@@ -2,399 +2,933 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>SkillNest· Smart Student Portal | Google Sheets Sync</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover, maximum-scale=1.0">
+    <title>SkillNest · Smart Student Portal | Google Sheets Sync</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="shortcut icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2300c6a7'/%3E%3C/svg%3E" type="image/x-icon">
     <link rel="shortcut icon" href="image/icon.png" type="image/x-icon">
-    <link rel="icon" href="image/icon.png" sizes="32*32">
-    <link rel="icon" href="image/icon.png" sizes="48*48">
-    <link rel="icon" href="image/icon.png" sizes="96*96">
-    <link rel="icon" href="image/icon.png" sizes="144*144">
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
-        body{min-height:100vh;background:radial-gradient(circle at 10% 30%,#e0f0ff,#9ae4c8);background-attachment:fixed;padding:1rem;transition:all 0.2s ease}
-        .glass-card{background:rgba(255,255,255,0.28);backdrop-filter:blur(16px);border-radius:2rem;box-shadow:0 20px 35px -12px rgba(0,0,0,0.2),0 0 0 1px rgba(255,255,255,0.45);transition:transform 0.25s ease,box-shadow 0.2s;padding:1.5rem}
-        .glass-card:hover{transform:translateY(-3px);box-shadow:0 28px 40px -16px rgba(0,0,0,0.25)}
-        .btn-glass{background:rgba(255,248,225,0.35);border:none;backdrop-filter:blur(8px);padding:0.75rem 1.8rem;border-radius:3rem;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.2s;color:#1a5c3a;box-shadow:0 2px 5px rgba(0,0,0,0.05)}
-        .btn-glass-primary{background:#05ff97;color:white;box-shadow:0 6px 14px rgba(44,160,121,0.3)}
-        .btn-glass-primary:hover{background:#1ef3c5;transform:scale(1.02)}
-        .btn-glass:hover{background:rgba(255,255,245,0.7);transform:translateY(-2px)}
-        input,select{background:rgba(255,255,250,0.9);border:1px solid rgba(255,255,255,0.6);border-radius:2.5rem;padding:0.8rem 1.2rem;font-size:0.95rem;outline:none;width:100%;transition:0.2s}
-        input:focus,select:focus{background:white;box-shadow:0 0 0 3px rgba(44,160,88,0.4);border-color:transparent}
-        .container{max-width:1400px;width:100%;margin:0 auto}
-        .panel{display:none;animation:fadeSlideUp 0.45s cubic-bezier(0.2,0.9,0.4,1.1)}
-        .active-panel{display:block}
-        @keyframes fadeSlideUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-        .grid-2cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.2rem}
-        .dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.8rem;margin-top:1.8rem}
-        .info-row{display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px dashed rgba(0,0,0,0.15);flex-wrap:wrap;gap:0.5rem}
-        .badge-modern{background:#40ff89;color:white;border-radius:2rem;padding:0.3rem 1rem;font-size:0.75rem;font-weight:600;display:inline-block}
-        .payment-month{display:inline-flex;align-items:center;justify-content:center;min-width:70px;background:#f1f5f9;border-radius:2rem;padding:0.6rem 0;margin:0.4rem;font-weight:600;font-size:0.85rem;cursor:pointer;transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
-        .paid-circle{background:linear-gradient(135deg,#2ecc71,#27ae60);color:white;box-shadow:0 4px 10px rgba(46,204,113,0.4)}
-        .paid-circle::before{content:"✓ ";font-weight:bold}
-        .clickable-bar{cursor:pointer;transition:0.2s;border-radius:2rem;padding:0.2rem 0.2rem;display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem}
-        .clickable-bar:hover{background:rgba(255,255,210,0.4);transform:scale(1.01)}
-        .contact-tile{display:flex;align-items:center;gap:0.8rem;background:rgba(255,255,245,0.507);border-radius:1.5rem;padding:0.7rem 1rem;margin:0.8rem 0;transition:0.2s;flex-wrap:wrap}
-        .contact-tile a{text-decoration:none;font-weight:600;color:#1e4663;word-break:break-word}
-        .contact-tile i{font-size:1.4rem;width:2rem;color:#2ecc71}
-        footer{margin-top:2rem;text-align:center;font-size:0.75rem;color:#1e3a4d;font-weight:500}
-        .loader-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:2000;display:none;justify-content:center;align-items:center;flex-direction:column;gap:20px;color:white}
-        .spinner{width:60px;height:60px;border:6px solid rgba(255,255,255,0.3);border-top:6px solid #2ca079;border-radius:50%;animation:spin 1s linear infinite}
-        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-        .toast-msg{position:fixed;bottom:30px;right:30px;background:#2c3e50;color:white;padding:12px 24px;border-radius:40px;z-index:2100;backdrop-filter:blur(8px)}
-        .skill-bar-bg{flex:1;min-width:120px;background:#e2e8f0;border-radius:2rem;overflow:hidden}
-        .skill-fill{border-radius:2rem;text-align:right;padding-right:6px;color:white;font-size:0.7rem;line-height:1.6rem}
-        .admin-link{position:fixed;bottom:20px;left:20px;z-index:100;background:rgba(255,255,255,0.5);padding:8px 16px;border-radius:30px;backdrop-filter:blur(5px)}
-        .admin-link a{color:#1e3a4d;text-decoration:none;font-weight:600}
-        .theme-toggle{position:fixed;top:20px;right:20px;z-index:1000;background:rgba(255,255,255,0.2);border:none;border-radius:50%;width:45px;height:45px;cursor:pointer;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#1a5c3a}
-        /* Profile Modal */
-        .profile-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(5px);z-index:1500;padding:15px;overflow-y:auto}
-        .profile-modal-content{background:rgba(30,40,50,0.95);backdrop-filter:blur(20px);border-radius:24px;max-width:500px;margin:20px auto;padding:25px;color:#f0f0f0;border:1px solid rgba(255,255,255,0.3);box-shadow:0 25px 50px rgba(0,0,0,0.4)}
-        /* ✅ Student Icon */
-        .student-icon{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#00c6a7,#00a38f);display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:white;cursor:pointer;transition:0.2s;box-shadow:0 4px 15px rgba(0,198,167,0.3)}
-        .student-icon:hover{transform:scale(1.05)}
-        body.dark-mode{background:linear-gradient(135deg,#0a1a2a,#1a3a2a)!important}
-        body.dark-mode .glass-card,body.dark-mode .glass-panel,body.dark-mode .admin-card,body.dark-mode .modal-content,body.dark-mode .profile-modal-content{background:rgba(20,30,40,0.7)!important;color:#f0f0f0!important;border-color:rgba(255,255,255,0.1)!important}
-        body.dark-mode input,body.dark-mode select,body.dark-mode textarea{background:rgba(0,0,0,0.3)!important;color:white!important}
-        body.dark-mode h1,body.dark-mode h2,body.dark-mode h3,body.dark-mode label{color:#f0f0f0!important}
-        body.dark-mode .btn-glass{background:rgba(0,0,0,0.3)!important;color:#00ffaa!important}
-        body.dark-mode .theme-toggle{color:#00ffaa}
-        @media (max-width:760px){body{padding:0.7rem}.grid-2cols{grid-template-columns:1fr}.dashboard-grid{grid-template-columns:1fr}.glass-card{border-radius:1.5rem;padding:1.2rem!important}.payment-month{min-width:65px;font-size:0.75rem}.btn-glass{padding:0.6rem 1.2rem;font-size:0.85rem}}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        :root {
+            --bg-primary: #020617;
+            --bg-secondary: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-elevated: #334155;
+            --accent: #10b981;
+            --accent-glow: #34d399;
+            --accent-soft: #6ee7b7;
+            --accent-dark: #059669;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --success-dark: #059669;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --radius-lg: 28px;
+            --radius-md: 20px;
+            --radius-sm: 16px;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.4);
+            --transition: all 0.2s ease;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 85px;
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 1200px;
+                padding: 0 24px;
+            }
+            .dashboard-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                align-items: start;
+            }
+            .full-width {
+                grid-column: span 2;
+            }
+            .stats-grid {
+                grid-column: span 2;
+            }
+            .bottom-nav-modern {
+                max-width: 600px;
+            }
+        }
+
+        body.light-mode {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-card-elevated: #f8fafc;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #475569;
+            --border-light: rgba(0, 0, 0, 0.08);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        body.light-mode .stat-card,
+        body.light-mode .glass-card,
+        body.light-mode .payment-month-tile,
+        body.light-mode .assignment-item,
+        body.light-mode .achievement-card,
+        body.light-mode .finance-summary-card,
+        body.light-mode .payment-history-item,
+        body.light-mode .contact-item,
+        body.light-mode .yearly-summary-card,
+        body.light-mode .login-card {
+            background: var(--bg-card);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            color: var(--text-primary);
+        }
+        
+        body.light-mode .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(0px);
+        }
+
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0 18px;
+            position: relative;
+            z-index: 2;
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 1200px;
+            }
+        }
+
+        /* ==================== LOGIN CARD STYLES ==================== */
+        .login-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem 1.8rem;
+            margin: 2rem auto;
+            max-width: 450px;
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .login-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.2);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .login-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+        }
+
+        .login-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .login-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .login-header p {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
+        /* Login Input Fields */
+        .login-input-group {
+            margin-bottom: 1rem;
+        }
+
+        .login-input-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .login-input-group label i {
+            margin-right: 6px;
+            color: var(--accent);
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(226, 226, 226, 0.479);
+            border: 1.5px solid var(--border-light);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .login-input:focus {
+            border-color: var(--accent);
+            background: rgba(160, 160, 160, 0.24);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+
+        .login-input::placeholder {
+            color: rgba(148, 163, 184, 0.5);
+        }
+
+        /* Login Button */
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(16, 185, 129, 0.4);
+            background: linear-gradient(135deg, var(--accent-glow), var(--accent));
+        }
+
+        .login-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Button Group */
+        .login-button-group {
+            display: flex;
+            gap: 12px;
+            margin: 1rem 0;
+        }
+
+        .login-btn-secondary {
+            flex: 1;
+            padding: 10px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--accent-glow);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .login-btn-secondary:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        /* Register Link */
+        .login-register-link {
+            text-align: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .login-register-btn {
+            background: transparent;
+            border: 1px solid var(--border-light);
+            padding: 10px;
+            width: 100%;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .login-register-btn:hover {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: var(--accent);
+            color: var(--accent-glow);
+        }
+
+        .login-message {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 1rem;
+            min-height: 35px;
+            color: #f87171;
+        }
+
+        /* ==================== DASHBOARD STYLES ==================== */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0 12px;
+        }
+        .logo-area h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .icon-btn-round {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .icon-btn-round:active { transform: scale(0.94); background: var(--accent-soft); color: white; }
+
+        .greeting-section {
+            margin: 8px 0 20px;
+        }
+        .greeting-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .greeting-sub {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 12px 8px;
+            text-align: center;
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+        }
+        .stat-card:active { transform: scale(0.96); }
+        .stat-icon { font-size: 1.5rem; color: var(--accent); margin-bottom: 6px; }
+        .stat-number { font-size: 1.3rem; font-weight: 800; }
+        .stat-label { font-size: 0.6rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .glass-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+        }
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent);
+        }
+
+        .finance-summary-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.05));
+            border-left: 4px solid var(--success);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+        .finance-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .finance-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .finance-label { font-size: 0.85rem; color: var(--text-secondary); }
+        .finance-value { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+        .finance-value.success { color: var(--success); }
+        .finance-value.warning { color: var(--warning); }
+        .finance-value.danger { color: var(--danger); }
+        .temp-account {
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            margin-top: 12px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        .temp-account i { color: var(--success); margin-right: 8px; }
+
+        .payment-history-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .payment-history-item:active { transform: scale(0.98); background: var(--accent-soft); }
+        .paid-badge { background: var(--success); color: white; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; }
+        .pending-badge { background: var(--danger); color: white; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; }
+        .payment-alert {
+            background: rgba(239,68,68,0.15);
+            border-left: 3px solid var(--danger);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 0.8rem;
+            display: none;
+        }
+        .payment-alert.show { display: flex; align-items: center; gap: 10px; }
+
+        .yearly-summary-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-light);
+        }
+        .yearly-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            text-align: center;
+        }
+        .yearly-stat-item {
+            padding: 8px;
+        }
+        .yearly-stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+        .yearly-stat-label {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+        .year-selector {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+        }
+        .year-select {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 30px;
+            padding: 8px 16px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .assignment-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+        }
+        .assignment-item:active { transform: scale(0.98); background: var(--accent-soft); }
+        
+        .badge {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .badge.high { background: rgba(239,68,68,0.2); color: #f87171; }
+        .badge.medium { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        .badge.low { background: rgba(16,185,129,0.2); color: #34d399; }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .achievement-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            text-align: center;
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+        }
+        .achievement-card:active { transform: scale(0.96); background: var(--accent-soft); }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px;
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            color: var(--text-primary);
+            margin: 8px 0;
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+        }
+        .contact-item:active { transform: scale(0.98); background: var(--accent-soft); }
+
+        .bottom-nav-modern {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 36px);
+            max-width: 460px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 8px 16px;
+            display: none;
+            justify-content: space-between;
+            z-index: 1000;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+        }
+        .nav-item-modern {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.65rem;
+            padding: 6px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .nav-item-modern i { font-size: 1.2rem; }
+        .nav-item-modern.active { color: var(--accent); background: rgba(16, 185, 129, 0.15); }
+
+        .hidden-panel { display: none !important; }
+        .show-panel { display: block; }
+        .feature-card { display: none; }
+        .feature-card.active { display: block; }
+        
+        .dashboard-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 768px) {
+            .dashboard-cards-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .full-width-card {
+                grid-column: span 2;
+            }
+        }
+        
+        .toast-msg { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 40px; z-index: 2100; font-weight: 500; }
+        .loader-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; display: none; justify-content: center; align-items: center; }
+        .spinner { width: 45px; height: 45px; border: 3px solid rgba(255,255,255,0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        input, select { width: 100%; padding: 14px 18px; border-radius: 50px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary); margin-bottom: 12px; }
+        input:focus, select:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+        .btn-neon { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); border: none; padding: 14px; border-radius: 50px; font-weight: 700; color: white; width: 100%; cursor: pointer; }
+        .btn-neon:active { transform: scale(0.98); }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 1500; justify-content: center; align-items: center; }
+        .modal-content { background: var(--bg-card); border-radius: 28px; max-width: 380px; width: 90%; padding: 24px; }
+        .profile-avatar { width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 2.5rem; color: white; }
+        .menu-item { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-card); border-radius: var(--radius-sm); margin-bottom: 8px; cursor: pointer; border: 1px solid var(--border-light); color: var(--text-primary); transition: var(--transition); }
+        .menu-item:active { transform: scale(0.98); background: var(--accent-soft); color: white; }
+        .theme-fab { position: fixed; top: 16px; right: 16px; z-index: 1100; width: 44px; height: 44px; border-radius: 30px; background: var(--bg-card); border: 1px solid var(--border-light); cursor: pointer; color: var(--text-secondary); transition: var(--transition); }
+        .theme-fab:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-<button class="theme-toggle" id="themeToggle"><i class="fas fa-moon" id="themeIcon"></i></button>
+<div class="loader-overlay" id="loadingOverlay"><div class="spinner"></div><div>Loading...</div></div>
+<button class="theme-fab" id="themeToggle"><i class="fas fa-moon" id="themeIcon"></i></button>
 
-<div class="loader-overlay" id="loadingOverlay"><div class="spinner"></div><div style="font-size:24px;font-weight:bold">Loading...</div></div>
-
-<div class="container">
-    <!-- LOGIN PANEL -->
-    <div id="loginPanel" class="panel active-panel glass-card" style="padding:2rem;max-width:520px;margin:2rem auto">
-        <div style="text-align:center;margin-bottom:1.2rem">
-            <i class="fas fa-graduation-cap" style="font-size:3rem;color:#43f7b2"></i>
-            <h2 style="font-weight:800;margin-top:0.5rem">SkillNest Access</h2>
-            <p>powered by <strong>Google Sheets</strong> sync</p>
-        </div>
-        <div style="margin-bottom:1rem"><label><i class="fas fa-id-card"></i> Student ID</label><input type="text" id="loginId" placeholder="e.g., S001" autocomplete="off"></div>
-        <div style="margin-bottom:1.5rem"><label><i class="fas fa-lock"></i> Password</label><input type="password" id="loginPass" placeholder="••••••"></div>
-        <button id="doLoginBtn" class="btn-glass btn-glass-primary" style="width:100%"><i class="fas fa-sign-in-alt"></i> Login to Dashboard</button>
-        <div style="display:flex;justify-content:space-between;gap:0.8rem;margin-top:1.2rem;flex-wrap:wrap">
-            <button id="forgotBtn" class="btn-glass"><i class="fab fa-whatsapp"></i> Forgot Pwd</button>
-            <button id="joinRequestBtn" class="btn-glass"><i class="fas fa-user-plus"></i> Join Request</button>
-        </div>
-        <div style="margin-top:1.5rem;text-align:center"><button id="showRegFormBtn" class="btn-glass" style="background:transparent">New Student? Register Here</button></div>
-        <div id="loginMessage" style="margin-top:1.2rem;font-size:0.85rem;text-align:center"></div>
-    </div>
-
-    <!-- SELF REGISTRATION PANEL -->
-    <div id="selfRegPanel" class="panel glass-card" style="padding:2rem;max-width:600px;margin:2rem auto">
-        <div style="text-align:center;margin-bottom:1.5rem">
-            <i class="fas fa-user-plus" style="font-size:2.5rem;color:#43f7b2"></i>
-            <h2 style="font-weight:700;margin-top:0.5rem">Registration Request</h2>
-            <p style="font-size:0.85rem">Submit your details. Admin will approve within 1-2 days.</p>
-        </div>
-        <form id="selfRegForm">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-                <div><label>Full Name *</label><input name="name" required></div>
-                <div><label>Grade *</label><select name="grade" required>
-                   <option value="">Select Grade</option>
-                   <option value="1">Grade 1</option><option value="2">Grade 2</option><option value="3">Grade 3</option>
-                   <option value="4">Grade 4</option><option value="5">Grade 5</option><option value="6">Grade 6</option>
-                   <option value="7">Grade 7</option><option value="8">Grade 8</option><option value="9">Grade 9</option>
-                   <option value="10">Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option><option value="13">Grade 13</option>
-                </select></div>
-                <div><label>Phone *</label><input name="phone" required></div>
-                <div><label>Email *</label><input type="email" name="email" placeholder="example@email.com" required></div>
-                <div><label>Gender *</label><select name="gender" required><option>Male</option><option>Female</option><option>Other</option></select></div>
-                <div><label>Birth Date *</label><input type="date" name="birth" required></div>
-            </div>
-            <div style="margin-top:1rem"><label>Address</label><input name="address" required></div>
-            <div style="margin-top:1rem"><label>Parent Info</label><input name="parentInfo" required></div>
-            <div style="display:flex;gap:1rem;margin-top:1.5rem">
-                <button type="submit" class="btn-glass btn-glass-primary">Submit Request</button>
-                <button type="button" class="btn-glass" id="backToLoginFromReg">Back to Login</button>
-            </div>
-        </form>
-        <p style="margin-top:1rem;font-size:0.75rem;color:#555"><i class="fas fa-info-circle"></i> Password auto-generated. You'll receive Student ID after approval.</p>
-    </div>
-
-    <!-- STUDENT DASHBOARD -->
-    <div id="profilePanel" class="panel glass-card" style="padding:1.8rem">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
-            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-                <!-- ✅ Student Icon (Clickable) -->
-                <div class="student-icon" onclick="openProfileModal('view')" title="View Profile">
-                    <i class="fas fa-user-graduate"></i>
+<div class="app-container">
+    <!-- LOGIN PANEL - UPDATED WITH MODERN STYLE -->
+    <div id="loginPanel" class="show-panel">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-graduation-cap"></i>
                 </div>
-                <h2><i class="fas fa-chalkboard-user"></i> Student Hub</h2>
-            </div>
-            <button id="logoutBtn" class="btn-glass"><i class="fas fa-power-off"></i> Exit</button>
-        </div>
-        
-        <div class="glass-card" style="padding:1.2rem;margin:1.2rem 0">
-            <div class="grid-2cols">
-                <div><i class="fas fa-user"></i> <strong>Full Name:</strong> <span id="profileName">—</span></div>
-                <div><i class="fas fa-chart-line"></i> <strong>Grade:</strong> <span id="profileGrade">—</span></div>
-                <div><i class="fas fa-calendar-check"></i> <strong>Class Status:</strong> <span id="inClassStatus" class="badge-modern">—</span></div>
-                <div><i class="fas fa-history"></i> <strong>Last Attendance:</strong> <span id="lastAttendDate">—</span></div>
-            </div>
-        </div>
-        
-        <div class="dashboard-grid">
-            <div class="glass-card" style="padding:1.3rem">
-                <h3><i class="fas fa-chart-pie"></i> Exam & Skill Insight</h3>
-                <div style="margin:12px 0 6px"><label><i class="fas fa-scroll"></i> Select paper:</label><select id="paperSelect" style="margin-top:5px"></select></div>
-                <div style="display:flex;justify-content:center;margin:8px 0"><canvas id="pieChartCanvas" width="200" height="200" style="max-height:210px;max-width:100%"></canvas></div>
-                <div id="skillBarsContainer" style="margin-top:12px"></div>
-                <div id="weaknessDetail" style="margin-top:12px"></div>
+                <h2>SkillNest</h2>
+                <p>Smart Student Portal · Google Sheets Sync</p>
             </div>
             
-            <div class="glass-card" style="padding:1.3rem">
-                <h3><i class="fas fa-coins"></i> Fee Tracker (Yearly)</h3>
-                <div id="paymentGrid" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px 0"></div>
-                <div id="paymentCardModal" style="margin-top:16px;border-radius:1.2rem;background:rgba(0,0,0,0.05);padding:10px"></div>
-                <div class="info-row" style="margin-top:12px"><span>📌 Click any month → view receipt</span></div>
+            <div class="login-input-group">
+                <label><i class="fas fa-id-card"></i> STUDENT ID</label>
+                <input type="text" id="loginId" class="login-input" placeholder="Enter your Student ID" autocomplete="off">
             </div>
             
-            <div class="glass-card" style="padding:1.3rem">
-                <h3><i class="fas fa-phone-alt"></i> Teacher & Support</h3>
-                <div class="contact-tile"><i class="fas fa-chalkboard-user"></i><span><strong>Class Teacher:</strong> Ms.Madhavi</span></div>
-                <div class="contact-tile"><i class="fas fa-phone-volume"></i><a href="tel:+94767899845"><strong>📞 +94 76 789 9845</strong></a></div>
-                <div class="contact-tile"><i class="fab fa-whatsapp" style="color:#25D366"></i><a href="https://wa.me/94767899845" target="_blank"><strong>WhatsApp Support</strong> → Click to chat</a></div>
-                <div class="contact-tile"><i class="fas fa-envelope"></i><span>madhaviupeksha17@gmail.com</span></div>
-                <hr style="margin:14px 0;opacity:0.4">
-                <div style="background:rgba(255,248,225,0.5);border-radius:1.5rem;padding:0.9rem">
-                    <h4><i class="fas fa-star-of-life"></i> About</h4>
-                    <p style="font-size:0.85rem;line-height:1.4">🏆 Real-time Google Sheets sync for marks, attendance & fees.</p>
-                </div>
+            <div class="login-input-group">
+                <label><i class="fas fa-lock"></i> PASSWORD</label>
+                <input type="password" id="loginPass" class="login-input" placeholder="Enter your password">
+            </div>
+            
+            <button id="doLoginBtn" class="login-btn">
+                <i class="fas fa-arrow-right-to-bracket"></i> Login to Dashboard
+            </button>
+            
+            <div class="login-button-group">
+                <button id="forgotBtn" class="login-btn-secondary">
+                    <i class="fab fa-whatsapp"></i> Forgot
+                </button>
+                <button id="joinRequestBtn" class="login-btn-secondary">
+                    <i class="fas fa-user-plus"></i> Join
+                </button>
+            </div>
+            
+            <div class="login-register-link">
+                <button id="showRegFormBtn" class="login-register-btn">
+                    <i class="fas fa-user-edit"></i> New Student? Register Here
+                </button>
+            </div>
+            
+            <div id="loginMessage" class="login-message"></div>
+        </div>
+    </div>
+
+    <!-- REGISTRATION PANEL -->
+    <div id="selfRegPanel" class="hidden-panel">
+        <div class="glass-card" style="margin:1rem auto;">
+            <h3 style="text-align:center;">Registration Request</h3>
+            <form id="selfRegForm">
+                <input name="name" placeholder="Full Name *" required>
+                <select name="grade" required><option value="">Select Grade</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option></select>
+                <input name="phone" placeholder="Phone *" required>
+                <input name="email" placeholder="Email *" required>
+                <select name="gender" required><option>Male</option><option>Female</option></select>
+                <input name="birth" type="date" required>
+                <input name="address" placeholder="Address *" required>
+                <input name="parentInf" placeholder="Parent Info *" required>
+                <button type="submit" class="btn-neon">Submit</button>
+                <button type="button" id="backToLoginFromReg" class="btn-neon" style="background:transparent; margin-top:8px;">Back</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PANEL -->
+    <div id="dashboardPanel" class="hidden-panel">
+        <div class="app-header"> 
+            <div class="logo-area"><i class="fas fa-chalkboard-user"></i><h2>SkillNest</h2></div>
+            <div class="header-actions">
+                <div class="icon-btn-round" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></div>
+                <div class="icon-btn-round" onclick="openProfileModal('view')"><i class="fas fa-user"></i></div>
             </div>
         </div>
-        <footer><i class="fas fa-database"></i> Live from Google Sheets • Developed by <strong>Thuli</strong></footer>
+
+        <div class="greeting-section">
+            <div class="greeting-title">Welcome back, <span id="welcomeName">Student</span> 👋</div>
+            <div class="greeting-sub" id="timeGreeting">Stay focused on your goals</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-layer-group"></i></div><div class="stat-number" id="profileGradeStat">—</div><div class="stat-label">Grade</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="stat-number" id="inClassStatus">—</div><div class="stat-label">Today Status</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-number" id="lastAttendDate">—</div><div class="stat-label">Last Attend</div></div>
+        </div>
+
+        <div class="payment-alert" id="paymentAlert"><i class="fas fa-exclamation-triangle"></i> <span id="paymentAlertMsg">Pending payments! Please pay before month end.</span></div>
+
+        <div class="dashboard-cards-grid">
+            <div id="homeCard" class="feature-card active">
+                <div class="glass-card">
+                    <div class="section-title"><i class="fas fa-calendar-alt"></i> Upcoming Assignments</div>
+                    <div id="assignmentsList"><div style="text-align:center; padding:20px; color:var(--text-secondary);">Loading assignments...</div></div>
+                </div>
+                <div class="glass-card">
+                    <div class="section-title"><i class="fas fa-trophy"></i> Achievements</div>
+                    <div id="achievementsGrid" class="achievements-grid"><div style="text-align:center; padding:20px; color:var(--text-secondary); grid-column:span 2;">Loading achievements...</div></div>
+                </div>
+            </div>
+
+            <div id="examCard" class="feature-card glass-card">
+                <div class="section-title"><i class="fas fa-chart-pie"></i> Exam & Skills</div>
+                <select id="paperSelect" style="margin-bottom:16px;"></select>
+                <div style="display:flex; justify-content:center;"><canvas id="pieChartCanvas" width="150" height="150"></canvas></div>
+                <div id="skillBarsContainer"></div>
+            </div>
+
+            <div id="paymentCard" class="feature-card full-width-card">
+                <div class="finance-summary-card">
+                    <div class="finance-row"><span class="finance-label"><i class="fas fa-user-graduate"></i> Student</span><span class="finance-value" id="financeStudentName">—</span></div>
+                    <div class="finance-row"><span class="finance-label"><i class="fas fa-id-card"></i> Student ID</span><span class="finance-value" id="financeStudentId">—</span></div>
+                    <div class="finance-row"><span class="finance-label"><i class="fas fa-wallet"></i> Total Paid (This Year)</span><span class="finance-value success" id="totalPaidAmountFinance">LKR 0</span></div>
+                    <div class="finance-row"><span class="finance-label"><i class="fas fa-chart-line"></i> Advance Balance</span><span class="finance-value success" id="advanceBalance">LKR 0</span></div>
+                    <div class="finance-row"><span class="finance-label"><i class="fas fa-exclamation-triangle"></i> Due Amount (Past Months)</span><span class="finance-value danger" id="dueAmount">LKR 0</span></div>
+                    <div class="temp-account"><i class="fas fa-credit-card"></i> <strong>Temporary Account</strong><br><span id="tempAccountNumber">ACC-0000-XXXX</span><br><small>Use Student ID for reference</small></div>
+                </div>
+                <div class="yearly-summary-card">
+                    <div class="year-selector"><select id="yearSelect" class="year-select"></select></div>
+                    <div style="font-size:0.9rem; font-weight:600; margin-bottom:12px; color:var(--accent);"><i class="fas fa-calendar-alt"></i> Yearly Fee Summary (<span id="selectedYear">2025</span>)</div>
+                    <div class="yearly-stats">
+                        <div class="yearly-stat-item"><div class="yearly-stat-value" id="yearlyTotalExpected">LKR 0</div><div class="yearly-stat-label">Total Expected</div></div>
+                        <div class="yearly-stat-item"><div class="yearly-stat-value" id="yearlyTotalPaid">LKR 0</div><div class="yearly-stat-label">Total Paid</div></div>
+                        <div class="yearly-stat-item"><div class="yearly-stat-value" id="yearlyRemaining">LKR 0</div><div class="yearly-stat-label">Remaining</div></div>
+                    </div>
+                </div>
+                <div class="glass-card"><div class="section-title"><i class="fas fa-receipt"></i> Monthly Fee History (LKR 1000/month)</div><div id="paymentGridModern"></div></div>
+                <div id="paymentReceiptModern" style="margin-top:12px;"></div>
+            </div>
+
+            <div id="contactCard" class="feature-card glass-card">
+                <div class="section-title"><i class="fas fa-headset"></i> Support & Contact</div>
+                <div class="contact-item"><i class="fas fa-chalkboard-user" style="color:var(--accent)"></i><span>Ms. Madhavi Rathnayake</span></div>
+                <a class="contact-item" href="tel:+94767899845"><i class="fas fa-phone" style="color:#06b6d4"></i>+94 76 789 9845</a>
+                <a class="contact-item" href="https://wa.me/94767899845" target="_blank"><i class="fab fa-whatsapp" style="color:#25D366"></i>WhatsApp Chat</a>
+                <div class="contact-item"><i class="fas fa-envelope" style="color:#ec4899"></i>madhaviupeksha17@gmail.com</div>
+                <div class="contact-item"><i class="fas fa-map-marker-alt" style="color:#f59e0b"></i>Salusala, Badulla</div>
+                <div class="contact-item"><i class="fas fa-clock" style="color:#8b5cf6"></i>Sat & Sun | 8AM - 12PM</div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Profile View/Edit Modal -->
-<div id="profileModal" class="profile-modal">
-    <div class="profile-modal-content" id="profileModalContent"></div>
-</div>
+<div class="modal-overlay" id="profileModal"><div class="modal-content" id="profileModalContent"></div></div>
 
-<div class="admin-link"><a href="index.html"><i class="fas fa-crown"></i> Back</a></div>
+<nav class="bottom-nav-modern" id="bottomNav">
+    <button class="nav-item-modern active" data-card="homeCard"><i class="fas fa-home"></i><span>Home</span></button>
+    <button class="nav-item-modern" data-card="examCard"><i class="fas fa-chart-pie"></i><span>Exam</span></button>
+    <button class="nav-item-modern" data-card="paymentCard"><i class="fas fa-wallet"></i><span>Payments</span></button>
+    <button class="nav-item-modern" data-card="contactCard"><i class="fas fa-phone"></i><span>Contact</span></button>
+    <button class="nav-item-modern" onclick="openProfileModal('view')"><i class="fas fa-user"></i><span>Profile</span></button>
+</nav>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx8rZB8_rO2YNB6wXon6Mcb55iN-XxowGiNFv4Pej5pul5xyXEssySql4-wbsu3aSNs/exec";
-    
-    // Theme Toggle
-    const themeToggle=document.getElementById('themeToggle'),themeIcon=document.getElementById('themeIcon');
-    const savedTheme=localStorage.getItem('skillnest_theme');
-    if(savedTheme==='dark'){document.body.classList.add('dark-mode');themeIcon.className='fas fa-sun';}
-    themeToggle?.addEventListener('click',()=>{document.body.classList.toggle('dark-mode');const d=document.body.classList.contains('dark-mode');themeIcon.className=d?'fas fa-sun':'fas fa-moon';localStorage.setItem('skillnest_theme',d?'dark':'light');});
-    
-    function showLoader(s){document.getElementById('loadingOverlay').style.display=s?'flex':'none'}
-    function showToast(m,e=false){let t=document.createElement('div');t.className='toast-msg';t.style.background=e?'#e67e22':'#2ecc71';t.innerText=m;document.body.appendChild(t);setTimeout(()=>t.remove(),3000)}
-    
-    async function apiCall(action,method='GET',payload={}){
-        try{let url=new URL(SCRIPT_URL);if(method==='GET'){url.searchParams.append('action',action);Object.entries(payload).forEach(([k,v])=>v&&url.searchParams.append(k,v));let r=await fetch(url);return await r.json();}else{let f=new URLSearchParams();f.append('action',action);f.append('data',JSON.stringify(payload));let r=await fetch(SCRIPT_URL,{method:'POST',body:f});return await r.json();}}catch(e){return{error:true,message:e.message}}
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUhbseLFlOJmOmbXLsYU8JX-rP_OnhCbXoXuYXcGQ4cuL71L8bg5rH-EBULVCCvN4/exec";
+    let isDark = localStorage.getItem('skillnest_dark') !== 'light';
+    function applyTheme() { if(isDark){ document.body.classList.remove('light-mode'); document.getElementById('themeIcon').className='fas fa-moon'; } else { document.body.classList.add('light-mode'); document.getElementById('themeIcon').className='fas fa-sun'; } }
+    applyTheme(); document.getElementById('themeToggle').addEventListener('click',()=>{ isDark=!isDark; localStorage.setItem('skillnest_dark',isDark?'dark':'light'); applyTheme(); });
+    function showLoader(s){ document.getElementById('loadingOverlay').style.display=s?'flex':'none'; }
+    function showToast(m,e=false){ let t=document.createElement('div'); t.className='toast-msg'; t.style.background=e?'#ef4444cc':'#10b981cc'; t.innerHTML=m; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
+    async function apiCall(a,m='GET',p={}){ try{ let u=new URL(SCRIPT_URL); if(m==='GET'){ u.searchParams.append('action',a); Object.entries(p).forEach(([k,v])=>v&&u.searchParams.append(k,v)); let r=await fetch(u); return await r.json(); } else{ let f=new URLSearchParams(); f.append('action',a); f.append('data',JSON.stringify(p)); let r=await fetch(SCRIPT_URL,{method:'POST',body:f}); return await r.json(); } } catch(e){ return {error:true,message:e.message}; } }
+
+    let currentStudent=null, pieChart=null, currentPapers=[], currentPaperIndex=0;
+    let currentYear = new Date().getFullYear();
+
+    function populateYearSelector() {
+        const yearSelect = document.getElementById('yearSelect');
+        const currentYearNow = new Date().getFullYear();
+        yearSelect.innerHTML = '';
+        for (let year = currentYearNow - 2; year <= currentYearNow + 2; year++) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            if (year === currentYearNow) option.selected = true;
+            yearSelect.appendChild(option);
+        }
     }
 
-    let currentStudent=null,pieChart=null,currentPapers=[],currentPaperIndex=0;
+    async function loadAssignments(studentId) {
+        let assignments = await apiCall('getAssignments', 'GET', { id: studentId });
+        let container = document.getElementById('assignmentsList');
+        if (assignments.success && assignments.data && assignments.data.length) {
+            container.innerHTML = '';
+            assignments.data.forEach(assignment => {
+                let div = document.createElement('div');
+                div.className = 'assignment-item';
+                let priorityClass = assignment.priority ? assignment.priority.toLowerCase() : 'low';
+                div.innerHTML = `<span><i class="fas fa-file-alt" style="margin-right:8px; color:var(--accent);"></i> ${assignment.title || 'Assignment'}</span><span class="badge ${priorityClass}">${assignment.priority || 'Low'}</span>`;
+                container.appendChild(div);
+            });
+        } else {
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary);">📭 No upcoming assignments</div>';
+        }
+    }
 
-    async function performLogin(){
-        let id=document.getElementById('loginId').value.trim(),pwd=document.getElementById('loginPass').value.trim();
-        if(!id||!pwd){showToast('Enter ID and Password',true);return}
-        showLoader(true);
-        let r=await apiCall('getStudentData','GET',{id});
-        if(r.success&&r.data&&String(r.data.password)===pwd){
-            currentStudent=r.data;
-            await loadStudentDashboard(currentStudent);
-            document.getElementById('loginPanel').classList.remove('active-panel');
-            document.getElementById('profilePanel').classList.add('active-panel');
-            showToast(`Welcome, ${currentStudent.name}!`);
-        }else{showToast('Invalid credentials',true);document.getElementById('loginMessage').innerHTML="<i class='fas fa-times-circle'></i> Invalid ID/Password"}
+    async function loadAchievements(studentId) {
+        let achievements = await apiCall('getAchievements', 'GET', { id: studentId });
+        let container = document.getElementById('achievementsGrid');
+        if (achievements.success && achievements.data && achievements.data.length) {
+            container.innerHTML = '';
+            achievements.data.forEach(achievement => {
+                let div = document.createElement('div');
+                div.className = 'achievement-card';
+                div.innerHTML = `<i class="${achievement.icon || 'fas fa-medal'}" style="color:${achievement.color || '#f59e0b'}; font-size:1.5rem;"></i><div style="margin-top:6px; font-weight:500;">${achievement.name || 'Achievement'}</div><small style="color:var(--text-secondary);">${achievement.date || ''}</small>`;
+                container.appendChild(div);
+            });
+        } else {
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary); grid-column:span 2;">🏆 Complete tasks to earn achievements!</div>';
+        }
+    }
+
+    document.querySelectorAll('.nav-item-modern[data-card]').forEach(item=>{ item.addEventListener('click',function(){ document.querySelectorAll('.nav-item-modern').forEach(n=>n.classList.remove('active')); this.classList.add('active'); document.querySelectorAll('.feature-card').forEach(c=>c.style.display='none'); document.getElementById(this.dataset.card).style.display='block'; }); });
+
+    async function performLogin() {
+        let id=document.getElementById('loginId').value.trim(), pwd=document.getElementById('loginPass').value.trim();
+        if(!id||!pwd){ showToast('Enter ID & Password',true); return; }
+        showLoader(true); let r=await apiCall('getStudentData','GET',{id});
+        if(r.success && r.data && String(r.data.password)===pwd){ currentStudent=r.data; await loadDashboard(currentStudent); document.getElementById('loginPanel').classList.add('hidden-panel'); document.getElementById('selfRegPanel').classList.add('hidden-panel'); document.getElementById('dashboardPanel').classList.remove('hidden-panel'); document.getElementById('bottomNav').style.display='flex'; showToast(`Welcome ${currentStudent.name}!`); updateGreetingTime(); } else { showToast('Invalid credentials',true); }
         showLoader(false);
     }
 
-    async function loadStudentDashboard(s){
-        document.getElementById('profileName').innerText=s.name;
-        document.getElementById('profileGrade').innerText=`Grade ${s.grade}`;
+    async function loadDashboard(s){
+        populateYearSelector();
+        document.getElementById('profileGradeStat').innerText=`G${s.grade}`;
+        document.getElementById('welcomeName').innerText=s.name;
         
-        let att=await apiCall('getAttendance','GET',{id:s.id});
-        let records=att.success?att.data:[];
-        let presentRecords=records.filter(a=>a.status==='Present');
-        
-        if(presentRecords.length>0){
-            let rawDate=presentRecords[0].date;
-            let displayDate=rawDate;
-            let year,month,day;
-            if(typeof rawDate==='string'&&rawDate.match(/^\d{4}-\d{2}-\d{2}$/)){
-                const parts=rawDate.split('-');
-                year=parseInt(parts[0]);month=parseInt(parts[1]);day=parseInt(parts[2]);
-            }else{const d=new Date(rawDate);if(!isNaN(d)){year=d.getFullYear();month=d.getMonth()+1;day=d.getDate();}}
-            if(year&&month&&day){const corrected=new Date(year,month-1,day);corrected.setDate(corrected.getDate()+1);displayDate=corrected.getFullYear()+'-'+String(corrected.getMonth()+1).padStart(2,'0')+'-'+String(corrected.getDate()).padStart(2,'0');}
-            document.getElementById('lastAttendDate').innerText=displayDate;
-        }else{document.getElementById('lastAttendDate').innerText='No records';}
-        
-        let today=new Date();
-        let todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
-        let todayPresent=false;
-        for(let record of presentRecords){
-            let rd=record.date,recordStr='';
-            if(typeof rd==='string'&&rd.match(/^\d{4}-\d{2}-\d{2}$/)){const parts=rd.split('-');const d=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));d.setDate(d.getDate()+1);recordStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-            else{const d=new Date(rd);if(!isNaN(d)){d.setDate(d.getDate()+1);recordStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}}
-            if(recordStr===todayStr){todayPresent=true;break;}
+        let att = await apiCall('getAttendance', 'GET', { id: s.id }); 
+        let records = att.success ? att.data : []; 
+        let presentRecords = records.filter(a => a.status === 'Present');
+        if (presentRecords.length > 0) { 
+            let rd = presentRecords[0].date, displayDate = rd; 
+            if (typeof rd === 'string' && rd.match(/^\d{4}-\d{2}-\d{2}$/)) { 
+                const p = rd.split('-'); 
+                const d = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2])); 
+                d.setDate(d.getDate() + 1); 
+                displayDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; 
+            } 
+            document.getElementById('lastAttendDate').innerText = displayDate; 
+        } else { 
+            document.getElementById('lastAttendDate').innerText = 'None'; 
         }
-        document.getElementById('inClassStatus').innerHTML=todayPresent?'<span style="background:#2ecc71;color:white;padding:4px 12px;border-radius:20px">✅ Active Today</span>':'<span style="background:#e74c3c;color:white;padding:4px 12px;border-radius:20px">⏳ Not Attended Today</span>';
+        let today = new Date(); 
+        let todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        let todayPresent = presentRecords.some(r => { 
+            let rd = r.date, rs = ''; 
+            if (typeof rd === 'string' && rd.match(/^\d{4}-\d{2}-\d{2}$/)) { 
+                const p = rd.split('-'); 
+                const d = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2])); 
+                d.setDate(d.getDate() + 1); 
+                rs = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; 
+            } 
+            return rs === todayStr; 
+        });
+        document.getElementById('inClassStatus').innerHTML = todayPresent ? '<span style="color:#34d399">✅ Active</span>' : '<span style="color:#f87171">⏳ Away</span>';
         
-        await renderExamAnalysis(s.id);
-        await renderPayment(s.id);
+        let paymentsAll = await apiCall('getAllPayments', 'GET'); 
+        let cm = today.getMonth() + 1, cy = today.getFullYear(); 
+        let mn = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; 
+        let hasPaid = false;
+        if (paymentsAll.success && paymentsAll.data) hasPaid = paymentsAll.data.some(p => p.id === s.id && p.month && p.month.toLowerCase() === mn[cm].toLowerCase() && Number(p.year) === cy);
+        document.getElementById('paymentAlert').classList.toggle('show', !hasPaid);
+        
+        await renderExamAnalysis(s.id); 
+        await renderPaymentModern(s.id);
+        await loadAssignments(s.id);
+        await loadAchievements(s.id);
+        
+        document.getElementById('yearSelect').addEventListener('change', async (e) => {
+            currentYear = parseInt(e.target.value);
+            document.getElementById('selectedYear').innerText = currentYear;
+            await renderPaymentModern(s.id);
+        });
     }
 
-    // ==================== PROFILE MODAL (NO IMAGE UPLOAD) ====================
-    function openProfileModal(mode){
-        if(!currentStudent)return;
-        const modal=document.getElementById('profileModal');
-        const content=document.getElementById('profileModalContent');
-        
-        if(mode==='view'){
-            content.innerHTML=`
-                <div style="text-align:center;margin-bottom:20px;">
-                    <div class="student-icon" style="margin:0 auto;width:90px;height:90px;font-size:3rem;">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    <h3 style="margin-top:10px;">${currentStudent.name}</h3>
-                    <span style="color:#aaa;">Grade ${currentStudent.grade}</span>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                    <div><i class="fas fa-id-card"></i> <strong>ID:</strong> ${currentStudent.id}</div>
-                    <div><i class="fas fa-phone"></i> <strong>Phone:</strong> ${currentStudent.phone||'-'}</div>
-                    <div><i class="fas fa-envelope"></i> <strong>Email:</strong> ${currentStudent.email||'-'}</div>
-                    <div><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> ${currentStudent.address||'-'}</div>
-                </div>
-                <button class="btn-glass btn-glass-primary" style="width:100%;margin-top:20px;" onclick="openProfileModal('edit')">
-                    <i class="fas fa-edit"></i> Edit Profile
-                </button>
-                <button class="btn-glass" style="width:100%;margin-top:8px;" onclick="closeProfileModal()">
-                    <i class="fas fa-times"></i> Close
-                </button>
-            `;
-        }else{
-            content.innerHTML=`
-                <h3 style="margin-bottom:15px;"><i class="fas fa-user-edit"></i> Edit Profile</h3>
-                <form id="profileEditFormModal">
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                        <div><label>Name</label><input type="text" id="editNameModal" value="${currentStudent.name||''}"></div>
-                        <div><label>Phone</label><input type="tel" id="editPhoneModal" value="${currentStudent.phone||''}"></div>
-                        <div><label>Email</label><input type="email" id="editEmailModal" value="${currentStudent.email||''}"></div>
-                        <div><label>New Password</label><input type="text" id="editPasswordModal" placeholder="Leave blank"></div>
-                        <div style="grid-column:1/-1;"><label>Address</label><input type="text" id="editAddressModal" value="${currentStudent.address||''}"></div>
-                    </div>
-                    <div style="display:flex;gap:10px;margin-top:15px;">
-                        <button type="submit" class="btn-glass btn-glass-primary" style="flex:1;"><i class="fas fa-save"></i> Save</button>
-                        <button type="button" class="btn-glass" style="flex:1;" onclick="openProfileModal('view')"><i class="fas fa-times"></i> Cancel</button>
-                    </div>
-                </form>
-            `;
-            
-            document.getElementById('profileEditFormModal').addEventListener('submit',async function(e){
-                e.preventDefault();
-                const updatedData={
-                    id:currentStudent.id,
-                    name:document.getElementById('editNameModal').value,
-                    phone:document.getElementById('editPhoneModal').value,
-                    email:document.getElementById('editEmailModal').value,
-                    address:document.getElementById('editAddressModal').value,
-                    password:document.getElementById('editPasswordModal').value||currentStudent.password
-                };
-                showLoader(true);
-                const result=await apiCall('updateStudentProfile','POST',updatedData);
-                showLoader(false);
-                if(result.success){
-                    showToast('Profile updated!');
-                    const refreshed=await apiCall('getStudentData','GET',{id:currentStudent.id});
-                    if(refreshed.success){currentStudent=refreshed.data;openProfileModal('view');}
-                }else{showToast(result.message,true);}
-            });
-        }
-        modal.style.display='block';
-    }
-    
-    function closeProfileModal(){document.getElementById('profileModal').style.display='none';}
-    document.getElementById('profileModal').addEventListener('click',function(e){if(e.target===this)closeProfileModal();});
-
-    // ==================== EXAM & PAYMENT ====================
     async function renderExamAnalysis(id){
-        let marks=await apiCall('getExamMarks','GET',{id});
-        let skills=await apiCall('getSkill','GET',{id});
-        let skillData=skills.success?skills.data:{grammar:0,writing:0,reading:0,spoken:0};
-        let paperMap=new Map();
-        (marks.success?marks.data:[]).forEach(m=>{
-            if(!paperMap.has(m.date)){
-                let displayDate=m.date;
-                if(displayDate&&displayDate.match(/^\d{4}-\d{2}-\d{2}$/)){
-                    const parts=displayDate.split('-');
-                    const d=new Date(Date.UTC(parts[0],parts[1]-1,parts[2]));
-                    d.setUTCDate(d.getUTCDate()+1);
-                    displayDate=`${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
-                }
-                paperMap.set(m.date,{displayDate:displayDate,mark:parseInt(m.mark)||0});
-            }
-        });
-        currentPapers=Array.from(paperMap.entries()).map(([od,d])=>({paperName:`Exam - ${d.displayDate}`,marks:d.mark,skills:skillData,originalDate:od}));
-        currentPapers.sort((a,b)=>new Date(b.originalDate)-new Date(a.originalDate));
-        let sel=document.getElementById('paperSelect');
-        sel.innerHTML=currentPapers.length?currentPapers.map((p,i)=>`<option value="${i}">${p.paperName} (${p.marks}/100)</option>`).join(''):'<option>No exams</option>';
-        sel.onchange=e=>{currentPaperIndex=parseInt(e.target.value);updatePieAndBars();};
-        if(currentPapers.length)updatePieAndBars();
+        let marks=await apiCall('getExamMarks','GET',{id}); let skills=await apiCall('getSkill','GET',{id}); let skillData=skills.success?skills.data:{grammar:0,writing:0,reading:0,spoken:0}; let paperMap=new Map();
+        (marks.success?marks.data:[]).forEach(m=>{ if(!paperMap.has(m.date)){ let dd=m.date; if(dd && dd.match(/^\d{4}-\d{2}-\d{2}$/)){ const p=dd.split('-'); const d=new Date(Date.UTC(p[0],p[1]-1,p[2])); d.setUTCDate(d.getUTCDate()+1); dd=`${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`; } paperMap.set(m.date,{displayDate:dd,mark:parseInt(m.mark)||0}); } });
+        currentPapers=Array.from(paperMap.entries()).map(([od,d])=>({paperName:`Exam - ${d.displayDate}`,marks:d.mark,skills:skillData,originalDate:od})); currentPapers.sort((a,b)=>new Date(b.originalDate)-new Date(a.originalDate));
+        let sel=document.getElementById('paperSelect'); sel.innerHTML=currentPapers.length?currentPapers.map((p,i)=>`<option value="${i}">${p.paperName} (${p.marks}/100)</option>`).join(''):'<option>No exams</option>'; sel.onchange=e=>{ currentPaperIndex=parseInt(e.target.value); updateChart(); }; if(currentPapers.length) updateChart();
+    }
+    function updateChart(){ if(!currentPapers.length) return; let p=currentPapers[currentPaperIndex]; let ctx=document.getElementById('pieChartCanvas').getContext('2d'); if(pieChart) pieChart.destroy(); pieChart=new Chart(ctx,{type:'doughnut',data:{labels:['Score','Remaining'],datasets:[{data:[p.marks,100-p.marks],backgroundColor:[getComputedStyle(document.body).getPropertyValue('--accent').trim()||'#10b981','rgba(255,255,255,0.1)'],borderWidth:0}]},options:{cutout:'70%',plugins:{legend:{display:false}}}}); let skills=p.skills, container=document.getElementById('skillBarsContainer'); container.innerHTML=''; ['grammar','writing','reading','spoken'].forEach(s=>{ let v=skills[s]||0; let colors=['#10b981','#34d399','#059669','#6ee7b7']; container.innerHTML+=`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><span style="width:70px; color:var(--text-secondary);">${s.toUpperCase()}</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.1);border-radius:10px;"><div style="width:${v}%;height:100%;background:${colors[['grammar','writing','reading','spoken'].indexOf(s)]};border-radius:10px;"></div></div><small style="color:var(--text-secondary);">${v}%</small></div>`; }); }
+
+    async function renderPaymentModern(id){
+        let payments=await apiCall('getPayments','GET',{id}); 
+        let paidMonths = (payments.success?payments.data:[]).filter(p => parseInt(p.year) === currentYear);
+        let paidSet=new Set(paidMonths.map(p=>p.month)); 
+        let months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; 
+        let container=document.getElementById('paymentGridModern'); 
+        if(!container) return; 
+        container.innerHTML=''; 
+        let monthlyFee=1000;
+        let totalPaidForYear = paidMonths.length * monthlyFee;
+        months.forEach((m, idx)=>{ let isPaid=paidSet.has(m); let div=document.createElement('div'); div.className='payment-history-item'; div.innerHTML=`<div><strong>${m}</strong> ${currentYear}</div><div class="${isPaid?'paid-badge':'pending-badge'}">${isPaid?'Paid ✓':'Pending'}</div>`; div.addEventListener('click',()=>{ if(isPaid){ document.getElementById('paymentReceiptModern').innerHTML=`<div class="glass-card" style="text-align:center"><i class="fas fa-check-circle" style="color:#10b981; font-size:2rem;"></i><p>Payment confirmed for ${m} ${currentYear}</p></div>`; } else { document.getElementById('paymentReceiptModern').innerHTML=`<div class="glass-card" style="text-align:center;color:#f87171"><i class="fas fa-exclamation-triangle"></i><p>${m} ${currentYear} - Pending fee LKR 1000</p></div>`; } }); container.appendChild(div); });
+        let today=new Date(); let currentMonthIndex = (today.getFullYear() === currentYear) ? today.getMonth() : 11; let expectedTotalForYear = (currentMonthIndex + 1) * monthlyFee; let yearlyExpectedFull = 12 * monthlyFee; let yearlyRemainingFull = yearlyExpectedFull - totalPaidForYear; let dueAmountForYear = expectedTotalForYear - totalPaidForYear; let advanceBalance = totalPaidForYear > expectedTotalForYear ? totalPaidForYear - expectedTotalForYear : 0; let finalDue = dueAmountForYear > 0 ? dueAmountForYear : 0;
+        document.getElementById('totalPaidAmountFinance').innerHTML=`LKR ${totalPaidForYear}`; document.getElementById('advanceBalance').innerHTML=`LKR ${advanceBalance}`; document.getElementById('dueAmount').innerHTML=`LKR ${finalDue}`; document.getElementById('financeStudentName').innerText=currentStudent?.name || '—'; document.getElementById('financeStudentId').innerText=currentStudent?.id || '—'; document.getElementById('tempAccountNumber').innerText=`SKL-${currentStudent?.id || '0000'}-${currentYear}`;
+        document.getElementById('yearlyTotalExpected').innerHTML=`LKR ${yearlyExpectedFull}`; document.getElementById('yearlyTotalPaid').innerHTML=`LKR ${totalPaidForYear}`; document.getElementById('yearlyRemaining').innerHTML=`LKR ${yearlyRemainingFull}`; document.getElementById('selectedYear').innerText = currentYear;
     }
 
-    function updatePieAndBars(){
-        if(!currentPapers.length)return;
-        let p=currentPapers[currentPaperIndex];
-        let ctx=document.getElementById('pieChartCanvas').getContext('2d');
-        if(pieChart)pieChart.destroy();
-        pieChart=new Chart(ctx,{type:'pie',data:{labels:['Your Score','Remaining'],datasets:[{data:[p.marks,100-p.marks],backgroundColor:['#3498db','#eef2f5']}]},options:{plugins:{legend:{position:'bottom'}}}});
-        let skills=p.skills,container=document.getElementById('skillBarsContainer');
-        container.innerHTML="<strong><i class='fas fa-chart-simple'></i> Skill levels</strong><br>";
-        ['grammar','writing','reading','spoken'].forEach(s=>{
-            let v=skills[s]||0;
-            let div=document.createElement('div');div.className='clickable-bar';div.style.margin='10px 0';
-            div.innerHTML=`<span style="display:inline-block;width:100px;font-weight:500">${s.toUpperCase()}</span><div class="skill-bar-bg"><div class="skill-fill" style="width:${v}%;background:linear-gradient(90deg,#2c7da0,#5fa7c5)">${v}%</div></div>`;
-            div.addEventListener('click',()=>{
-                let advice=v<50?`⚠️ Critical weakness in ${s}.`:v<70?`📌 Moderate improvement needed.`:`✅ Strong ${s} ability!`;
-                document.getElementById('weaknessDetail').innerHTML=`<div style="background:#fff3e0;border-radius:1.2rem;padding:0.8rem;border-left:6px solid #f39c12"><i class="fas fa-lightbulb"></i> <strong>${s.toUpperCase()}:</strong> ${advice}</div>`;
-            });
-            container.appendChild(div);
-        });
+    function openProfileModal(mode){
+        if(!currentStudent) return; const m=document.getElementById('profileModal'), c=document.getElementById('profileModalContent'); 
+        if(mode==='view'){ 
+            c.innerHTML=`<div style="text-align:center;"><div class="profile-avatar"><i class="fas fa-user-graduate"></i></div><h3>${currentStudent.name}</h3><p>Grade ${currentStudent.grade}</p><p>${currentStudent.email||''}</p></div><div class="menu-item" onclick="openProfileModal('edit')"><i class="fas fa-edit"></i> Edit Profile</div><div class="menu-item" id="logoutFromModal"><i class="fas fa-sign-out-alt"></i> Logout</div><div class="menu-item" onclick="closeProfileModal()"><i class="fas fa-times"></i> Close</div>`; 
+            document.getElementById('logoutFromModal')?.addEventListener('click',()=>{ document.getElementById('logoutBtn').click(); closeProfileModal(); }); 
+        } else { 
+            c.innerHTML=`<h3>Edit Profile</h3><form id="profileEditFormModal"><input id="editNameModal" value="${currentStudent.name}"><input id="editPhoneModal" value="${currentStudent.phone||''}"><input id="editEmailModal" value="${currentStudent.email||''}"><input id="editPasswordModal" placeholder="New Password"><button type="submit" class="btn-neon">Save</button></form><button class="btn-neon" style="background:transparent; margin-top:8px;" onclick="openProfileModal('view')">Cancel</button>`; 
+            document.getElementById('profileEditFormModal').addEventListener('submit',async(e)=>{ e.preventDefault(); const d={id:currentStudent.id,name:document.getElementById('editNameModal').value,phone:document.getElementById('editPhoneModal').value,email:document.getElementById('editEmailModal').value,address:currentStudent.address,password:document.getElementById('editPasswordModal').value||currentStudent.password}; showLoader(true); let r=await apiCall('updateStudentProfile','POST',d); showLoader(false); if(r.success){ showToast('Updated!'); let ref=await apiCall('getStudentData','GET',{id:currentStudent.id}); if(ref.success){ currentStudent=ref.data; openProfileModal('view'); } } else showToast(r.message,true); }); 
+        } m.style.display='flex'; 
     }
+    function closeProfileModal(){ document.getElementById('profileModal').style.display='none'; }
+    function updateGreetingTime(){ let hour=new Date().getHours(); let greeting=hour<12?'Good Morning':hour<18?'Good Afternoon':'Good Evening'; document.getElementById('timeGreeting').innerText=greeting+'! Keep learning 🌟'; }
 
-    async function renderPayment(id){
-        let payments=await apiCall('getPayments','GET',{id});
-        let paidSet=new Set((payments.success?payments.data:[]).map(p=>p.month));
-        let months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-        let container=document.getElementById('paymentGrid');container.innerHTML='';
-        months.forEach(m=>{
-            let d=document.createElement('div');d.className='payment-month'+(paidSet.has(m)?' paid-circle':'');
-            d.style.background=paidSet.has(m)?'linear-gradient(145deg,#2ecc71,#239b56)':'#eef2f5';
-            d.style.color=paidSet.has(m)?'white':'#2c3e50';d.textContent=m;
-            d.addEventListener('click',()=>{document.getElementById('paymentCardModal').innerHTML=paidSet.has(m)?`<div style="background:white;border-radius:1.3rem;padding:1rem"><i class="fas fa-receipt"></i> <strong>Payment confirmed</strong><br>📆 ${m}<br>👤 ${currentStudent.name}<br>💰 LKR 1,000</div>`:`<div style="background:#ffe0b3;border-radius:1.3rem;padding:1rem"><i class="fas fa-exclamation-triangle"></i> <strong>Unpaid</strong><br>${m} fees pending.</div>`;});
-            container.appendChild(d);
-        });
-    }
-
-    // Event Listeners
-    document.getElementById('selfRegForm')?.addEventListener('submit',async e=>{e.preventDefault();let fd=new FormData(e.target),data={};fd.forEach((v,k)=>data[k]=v);showLoader(true);let r=await apiCall('pendingRegistration','POST',data);showLoader(false);if(r.success){showToast(`Request submitted! ID: ${r.id}`);document.getElementById('backToLoginFromReg').click();}else showToast(r.message,true);});
-    document.getElementById('showRegFormBtn')?.addEventListener('click',()=>{document.getElementById('loginPanel').classList.remove('active-panel');document.getElementById('selfRegPanel').classList.add('active-panel');});
-    document.getElementById('backToLoginFromReg')?.addEventListener('click',()=>{document.getElementById('selfRegPanel').classList.remove('active-panel');document.getElementById('loginPanel').classList.add('active-panel');});
     document.getElementById('doLoginBtn')?.addEventListener('click',performLogin);
-    document.getElementById('forgotBtn')?.addEventListener('click',()=>{let id=document.getElementById('loginId').value.trim()||'unknown';window.open(`https://wa.me/94754551129?text=Password recovery for ID: ${id}`,'_blank');});
-    document.getElementById('joinRequestBtn')?.addEventListener('click',()=>{window.open('https://wa.me/94767899845?text=I would like to join Your class Teacher','_blank');});
-    document.getElementById('logoutBtn')?.addEventListener('click',()=>{currentStudent=null;if(pieChart)pieChart.destroy();document.getElementById('profilePanel').classList.remove('active-panel');document.getElementById('loginPanel').classList.add('active-panel');document.getElementById('loginId').value='';document.getElementById('loginPass').value='';});
-    document.getElementById('loginId')?.addEventListener('keypress',e=>{if(e.key==='Enter')performLogin();});
-    document.getElementById('loginPass')?.addEventListener('keypress',e=>{if(e.key==='Enter')performLogin();});
+    document.getElementById('logoutBtn')?.addEventListener('click',()=>{ currentStudent=null; if(pieChart) pieChart.destroy(); document.getElementById('dashboardPanel').classList.add('hidden-panel'); document.getElementById('loginPanel').classList.remove('hidden-panel'); document.getElementById('bottomNav').style.display='none'; showToast('Logged out'); });
+    document.getElementById('forgotBtn')?.addEventListener('click',()=>{ let id=document.getElementById('loginId').value.trim()||'unknown'; window.open(`https://wa.me/94754551129?text=Password recovery for ID: ${id}`,'_blank'); });
+    document.getElementById('joinRequestBtn')?.addEventListener('click',()=>{ window.open('https://wa.me/94767899845?text=I would like to join Your class Teacher','_blank'); });
+    document.getElementById('showRegFormBtn')?.addEventListener('click',()=>{ document.getElementById('loginPanel').classList.add('hidden-panel'); document.getElementById('selfRegPanel').classList.remove('hidden-panel'); });
+    document.getElementById('backToLoginFromReg')?.addEventListener('click',()=>{ document.getElementById('selfRegPanel').classList.add('hidden-panel'); document.getElementById('loginPanel').classList.remove('hidden-panel'); });
+    document.getElementById('selfRegForm')?.addEventListener('submit',async e=>{ e.preventDefault(); let fd=new FormData(e.target), data={}; fd.forEach((v,k)=>data[k]=v); showLoader(true); let r=await apiCall('pendingRegistration','POST',data); showLoader(false); if(r.success){ showToast('Request submitted!'); document.getElementById('backToLoginFromReg').click(); } else showToast(r.message,true); });
 </script>
-
 </body>
 </html>
