@@ -139,10 +139,10 @@
             margin-bottom: 1.8rem;
         }
 
-        .login-icon {
+       .login-icon {
             width: 70px;
             height: 70px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+            background: #fafafa00;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -153,7 +153,7 @@
 
         .login-icon i {
             font-size: 2rem;
-            color: white;
+            color: rgb(0, 255, 76);
         }
 
         .login-header h2 {
@@ -661,7 +661,8 @@
     <!-- REGISTRATION PANEL -->
     <div id="selfRegPanel" class="hidden-panel">
         <div class="glass-card" style="margin:1rem auto;">
-            <h3 style="text-align:center;">Registration Request</h3>
+            <center><i class="fas fa-user-plus" style="font-size:2.5rem;color:#43f7b2"></i></center><br>
+            <h3 style="text-align:center;">Registration Request</h3><br>
             <form id="selfRegForm">
                 <input name="name" placeholder="Full Name *" required>
                 <select name="grade" required><option value="">Select Grade</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option></select>
