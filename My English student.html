@@ -929,7 +929,21 @@
     document.getElementById('joinRequestBtn')?.addEventListener('click',()=>{ window.open('https://wa.me/94767899845?text=I would like to join Your class Teacher','_blank'); });
     document.getElementById('showRegFormBtn')?.addEventListener('click',()=>{ document.getElementById('loginPanel').classList.add('hidden-panel'); document.getElementById('selfRegPanel').classList.remove('hidden-panel'); });
     document.getElementById('backToLoginFromReg')?.addEventListener('click',()=>{ document.getElementById('selfRegPanel').classList.add('hidden-panel'); document.getElementById('loginPanel').classList.remove('hidden-panel'); });
-    document.getElementById('selfRegForm')?.addEventListener('submit',async e=>{ e.preventDefault(); let fd=new FormData(e.target), data={}; fd.forEach((v,k)=>data[k]=v); showLoader(true); let r=await apiCall('pendingRegistration','POST',data); showLoader(false); if(r.success){ showToast('Request submitted!'); document.getElementById('backToLoginFromReg').click(); } else showToast(r.message,true); });
+   document.getElementById('selfRegForm')?.addEventListener('submit', async e => { 
+    e.preventDefault(); 
+    let fd = new FormData(e.target), data = {}; 
+    fd.forEach((v,k) => data[k] = v); 
+    showLoader(true); 
+    let r = await apiCall('pendingRegistration', 'POST', data); 
+    showLoader(false); 
+    if (r.success) { 
+        showToast('✅ Request submitted successfully!'); 
+        e.target.reset();  // ← මෙය එකතු කරන්න
+        document.getElementById('backToLoginFromReg').click(); 
+    } else { 
+        showToast(r.message || 'Submission failed!', true); 
+    } 
+});
 </script>
 </body>
 </html>
